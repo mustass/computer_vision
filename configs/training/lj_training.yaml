@@ -3,4 +3,4 @@ metric: ${metric.metric.metric_name}
 mode: "min"
 seed: 666
 debug: True
-lightning_module_name: diffspeak.lightning_classes.lightningmodule_model.LitDiffWaveModel
+lightning_module_name: dl4cv.lightning_classes.plmodel.LitCVModel
