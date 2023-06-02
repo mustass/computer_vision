@@ -2,15 +2,15 @@ defaults:
   - _self_
   - callbacks: callbacks
   - private: default
-  - datamodule: tjspeech_cond
+  - datamodule: cifar10
   - logging: wandb
-  - loss: L1loss
-  - metric: mae
-  - model: diffwave_base
+  - loss: NLLLoss
+  - metric: accuracy
+  - model: resnet_base
   - optimizer: adam
   - scheduler: cosine
   - trainer: default_trainer
-  - training: lj_training
+  - training: default_training
   - override hydra/hydra_logging: colorlog
   - override hydra/job_logging: colorlog
 

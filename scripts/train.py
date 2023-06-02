@@ -9,7 +9,6 @@ from hydra.utils import get_original_cwd
 from omegaconf import DictConfig, OmegaConf
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 
-from dl4cv.utils.config_utils import sanity_check
 from dl4cv.utils.technical_utils import load_obj
 from dl4cv.utils.utils import save_useful_info, set_seed
 
@@ -57,7 +56,6 @@ def run(cfg: DictConfig) -> None:
     cfg.datamodule.path_to_metadata = (
         Path(get_original_cwd()) / cfg.datamodule.path_to_metadata
     )  # Could also just give absolute paths
-    sanity_check(cfg)
 
     dm = load_obj(cfg.datamodule.datamodule_name)(cfg=cfg)
     dm.setup()

@@ -1,6 +1,7 @@
 lr: 2e-4
 metric: ${metric.metric.metric_name}
-mode: "min"
+mode: "max"
+n_classes: 10
 seed: 666
 debug: True
 lightning_module_name: dl4cv.lightning_classes.plmodel.LitCVModel

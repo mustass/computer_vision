@@ -8,7 +8,7 @@ from omegaconf import DictConfig
 from dl4cv.utils.technical_utils import load_obj
 
 
-class LitCVModel(pl.LightningDataModule):
+class LitCVModel(pl.LightningModule):
     def __init__(self, cfg: DictConfig):
         super().__init__()
         self.cfg = cfg

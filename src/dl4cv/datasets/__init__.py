@@ -1,1 +1,1 @@
-from .dataset import lj_speech_from_path
+from .dataset import CIFAR10
