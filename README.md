@@ -13,14 +13,12 @@ The particular approach of this repo is heavily inspired by [https://youtu.be/w1
 
 It's very important that you load a new-ish python version before running the getting started script. Do this by: 
 ```
-module load python3/3.9.11
+module load python3/3.10
 module load cuda/11.7
 ```
 
 2. Set environment variables (!!):
 ```{bash}
-export DATA_PATH_PREFIX=# path to your data
-export WANDB_KEY=#your wandb api key
 export PATH_TO_VENV=#path to your venv
 ```
 
