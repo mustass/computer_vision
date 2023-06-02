@@ -11,3 +11,5 @@ jupyter
 pytorch-lightning
 omegaconf
 hydra-core
+albumentations
+wandb

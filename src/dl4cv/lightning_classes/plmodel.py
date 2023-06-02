@@ -7,6 +7,7 @@ from omegaconf import DictConfig
 
 from dl4cv.utils.technical_utils import load_obj
 
+
 class LitCVModel(pl.LightningDataModule):
     def __init__(self, cfg: DictConfig):
         super().__init__()
@@ -22,7 +23,7 @@ class LitCVModel(pl.LightningDataModule):
                 )(**cfg.metric.metric.params)
             }
         )
-    
+
     def forward(self, x, *args, **kwargs):
         out = self.model(x)
         return out
@@ -46,7 +47,7 @@ class LitCVModel(pl.LightningDataModule):
                 }
             ],
         )
-    
+
     def training_step(self, batch, batch_idx):
         input, target = batch
 
@@ -57,9 +58,7 @@ class LitCVModel(pl.LightningDataModule):
         )
 
         for metric in self.metrics:
-            score = self.metrics[metric](
-                predicted, target
-            )  
+            score = self.metrics[metric](predicted, target)
             self.log(
                 f"train_{metric}",
                 score,
@@ -70,7 +69,7 @@ class LitCVModel(pl.LightningDataModule):
             )
 
         return loss
-    
+
     def validation_step(self, batch, batch_idx):
         input, target = batch
 
@@ -82,9 +81,7 @@ class LitCVModel(pl.LightningDataModule):
         )
 
         for metric in self.metrics:
-            score = self.metrics[metric](
-                predicted, target
-            )  
+            score = self.metrics[metric](predicted, target)
             self.log(
                 f"val_{metric}",
                 score,
@@ -95,7 +92,7 @@ class LitCVModel(pl.LightningDataModule):
             )
 
         return loss
-    
+
     def validation_step(self, batch, batch_idx):
         input, target = batch
 
@@ -107,9 +104,7 @@ class LitCVModel(pl.LightningDataModule):
         )
 
         for metric in self.metrics:
-            score = self.metrics[metric](
-                predicted, target
-            )  
+            score = self.metrics[metric](predicted, target)
             self.log(
                 f"test_{metric}",
                 score,
