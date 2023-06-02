@@ -1,0 +1,6 @@
+class_name: dl4cv.models.ResNet
+params:
+  n_in: 3
+  n_features: 8
+  num_res_blocks: 3
+  num_classes: 10

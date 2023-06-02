@@ -1,0 +1,6 @@
+metric:
+  class_name: torchmetrics.MeanAbsoluteError
+  metric_name: mae
+  params:
+    dist_sync_on_step: False
+

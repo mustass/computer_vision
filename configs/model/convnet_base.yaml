@@ -1,0 +1,2 @@
+class_name: dl4cv.models.ConvNet
+params:
