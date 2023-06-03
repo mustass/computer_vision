@@ -93,7 +93,7 @@ class LitCVModel(pl.LightningModule):
 
         return loss
 
-    def validation_step(self, batch, batch_idx):
+    def test_step(self, batch, batch_idx):
         input, target = batch
 
         predicted = self.model(input)
