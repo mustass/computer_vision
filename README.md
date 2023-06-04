@@ -16,7 +16,7 @@ module load python3/3.10
 module load cuda/11.7
 ```
 
-2. Set environment variables (!!):
+2. Set environment variable:
 ```{bash}
 export PATH_TO_VENV=#path to your venv
 ```
@@ -39,3 +39,20 @@ pip install -r requirements-dev.txt
 ## Contribution guide
 
 This repo has protection on the ``main`` branch. Therefore any contribution has to go through a Pull Request. 
+
+## Training
+
+The package logs relevant metrics and stats to `wandb`. For this to run, one needs to login with a token: 
+```{bash}
+wandb login your_token
+```
+
+After which we can tain on GPU: 
+```{bash}
+python3 ./scripts/train.py trainer.accelerator=gpu
+```
+
+Or cpu: 
+```{bash}
+python3 ./scripts/train.py
+```
