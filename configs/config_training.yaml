@@ -4,7 +4,7 @@ defaults:
   - private: default
   - datamodule: cifar10
   - logging: wandb
-  - loss: NLLLoss
+  - loss: cross_entropy
   - metric: accuracy
   - model: resnet_base
   - optimizer: adam

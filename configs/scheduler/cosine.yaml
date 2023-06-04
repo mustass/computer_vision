@@ -4,3 +4,4 @@ step: epoch
 monitor: train_${training.metric}
 params:
   T_max: 10
+  eta_min: 5e-3

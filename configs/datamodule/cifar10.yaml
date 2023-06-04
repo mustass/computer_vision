@@ -2,6 +2,6 @@ datamodule_name: dl4cv.lightning_classes.datamodule.CIFAR10DataModule
 path_to_metadata: ./data
 params:
   split: [0.8 , 0.2]
-  batch_size: 128
+  batch_size: 64
   num_workers: 4
   pin_memory: True
