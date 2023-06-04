@@ -6,10 +6,9 @@ This repo takes advantage of two frameworks: (1) Hydra for configs management an
 The particular approach of this repo is heavily inspired by [https://youtu.be/w10WrRA-6uI].
 
 ## Getting started 
-
-1. Create a virtual environment the way you are used to (conda, venv, pyenv, whatever). 
-
 *On HPC:*
+1. Create a virtual environment the way you are used to (conda, venv, pyenv, whatever). 
+The intended approach is to use `venv`. If `conda` or other virtual environment frameworks are used, the scripts in `/bash/` folder cannot be used but are easily modified. (1 line modification). 
 
 It's very important that you load a new-ish python version before running the getting started script. Do this by: 
 ```
@@ -24,15 +23,15 @@ export PATH_TO_VENV=#path to your venv
 
 3. Run the bash script from the root folder:
 ```{bash}
-./get_started.sh
+./bash/setup.sh
 ```
 
 This will:
-1. Create a virtual environment with the name `venv` in the parent folder. *If you want the name or location to be different, it's up to you. Just remember that the path to the environment is used in the `train_dtu_hpc.sh` script. So adjust accordingly.*
-2. Install the package in editable mode with all requirements
-3. Download the dataset and extract it
+1. Load the HPC modules mentioned above
+2. Activate the virtual environment
+3. Install the package in editable mode with all requirements
 
-You can further install the requirements for developing the package:
+You should further install the requirements for developing (writing code) of the package:
 ```{bash}
 pip install -r requirements-dev.txt
 ```
@@ -40,14 +39,3 @@ pip install -r requirements-dev.txt
 ## Contribution guide
 
 This repo has protection on the ``main`` branch. Therefore any contribution has to go through a Pull Request. 
-
-Make sure to run ``make`` in the root directory and push changes before creating a Pull Request. This will require you to have the packages in `requriements-dev.txt` installed.
-
-## Running things and stuffs
-
-### Preprocessing of the LJ dataset
-
-To run conditional training or/and evaluation we need to create spectrograms.
-```{bash}
-python3 scripts/preprocess.py
-```
