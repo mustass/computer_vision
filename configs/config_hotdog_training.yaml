@@ -17,7 +17,7 @@ defaults:
 general:
   run_name: run
   logs_folder_name: logs
-  workspace: dmiai-mh
+  workspace: computervision02514
   project_name: DL4CV
   device: gpu
   log_code: False
