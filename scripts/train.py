@@ -26,9 +26,9 @@ def run(cfg: DictConfig) -> None:
     """
     set_seed(cfg.training.seed)
     run_name = os.path.basename(os.getcwd())
-    #cfg.callbacks.model_checkpoint.params.dirpath = Path(
-    #    os.getcwd(), cfg.callbacks.model_checkpoint.params.dirpath
-    #).as_posix()
+    cfg.callbacks.model_checkpoint.params.dirpath = Path(
+        os.getcwd(), cfg.callbacks.model_checkpoint.params.dirpath
+    ).as_posix()
     callbacks = []
     for callback in cfg.callbacks.other_callbacks:
         if callback.params:
@@ -45,7 +45,7 @@ def run(cfg: DictConfig) -> None:
             loggers.append(load_obj(logger.class_name)(**logger.params))
 
     callbacks.append(EarlyStopping(**cfg.callbacks.early_stopping.params))
-    #callbacks.append(ModelCheckpoint(**cfg.callbacks.model_checkpoint.params))
+    callbacks.append(ModelCheckpoint(**cfg.callbacks.model_checkpoint.params))
 
     trainer = pl.Trainer(
         logger=loggers,
@@ -75,6 +75,8 @@ def run(cfg: DictConfig) -> None:
             model_name = "saved_models/last.pth"
             torch.save(model.model.state_dict(), model_name)
 
+    if cfg.general.predict:
+        trainer.test(model, datamodule=dm, ckpt_path="best")
 
 @hydra.main(config_path="../configs", config_name="config_training")
 def run_model(cfg: DictConfig) -> None:

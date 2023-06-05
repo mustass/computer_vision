@@ -3,5 +3,5 @@ metric: ${metric.metric.metric_name}
 mode: "max"
 n_classes: 10
 seed: 666
-debug: True
+debug: False
 lightning_module_name: dl4cv.lightning_classes.plmodel.LitCVModel
