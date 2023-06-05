@@ -4,18 +4,17 @@ from omegaconf import DictConfig
 from pytorch_lightning import LightningDataModule
 from torch.utils.data import DataLoader, random_split
 
-from dl4cv.datasets import CIFAR10
-#from dl4cv.utils.technical_utils import load_obj
+from dl4cv.utils.technical_utils import load_obj
 
 
-class CIFAR10DataModule(LightningDataModule):
+class CVDataModule(LightningDataModule):
     def __init__(self, cfg: DictConfig):
         super().__init__()
         self.config = cfg
 
     def setup(self, stage: Optional[str] = None, inference: Optional[bool] = False):
         self.inference = inference
-        self.dataset = CIFAR10(self.config)
+        self.dataset = load_obj(self.config.datamodule.params.dataset)(self.config)
         
         self.splits = random_split(
                 self.dataset.train, self.config.datamodule.params.split

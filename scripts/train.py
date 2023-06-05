@@ -53,10 +53,6 @@ def run(cfg: DictConfig) -> None:
         **cfg.trainer,
     )
 
-    cfg.datamodule.path_to_metadata = (
-        Path(get_original_cwd()) / cfg.datamodule.path_to_metadata
-    )  # Could also just give absolute paths
-
     dm = load_obj(cfg.datamodule.datamodule_name)(cfg=cfg)
     dm.setup()
 

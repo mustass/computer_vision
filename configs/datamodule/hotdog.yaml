@@ -1,0 +1,9 @@
+datamodule_name: dl4cv.lightning_classes.CVDataModule
+params:
+  dataset: dl4cv.datasets.HotDogNotHotDog
+  train_dir: /dtu/datasets1/02514/hotdog_nothotdog/train/
+  test_dir: /dtu/datasets1/02514/hotdog_nothotdog/test/
+  split: [0.8 , 0.2]
+  batch_size: 64
+  num_workers: 4
+  pin_memory: True

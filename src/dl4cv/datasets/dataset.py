@@ -22,3 +22,26 @@ class CIFAR10(torch.utils.data.Dataset):
             train=False,
             transform=T.transforms.ToTensor(),
         )
+
+class HotDogNotHotDog(torch.utils.data.Dataset):
+    def __init__(self, cfg: DictConfig):
+        super().__init__()
+        self.cfg = cfg
+        self.train = T.datasets.ImageFolder(
+            root=self.cfg.datamodule.params.train_dir,
+            transform=T.transforms.Compose(
+                [
+                    T.transforms.Resize((224, 224)),
+                    T.transforms.ToTensor(),
+                ]
+            ),
+        )
+        self.test = T.datasets.ImageFolder(
+            root=self.cfg.datamodule.params.test_dir,
+            transform=T.transforms.Compose(
+                [
+                    T.transforms.Resize((224, 224)),
+                    T.transforms.ToTensor(),
+                ]
+            ),
+        )
