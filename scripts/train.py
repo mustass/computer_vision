@@ -60,6 +60,7 @@ def run(cfg: DictConfig) -> None:
     trainer.fit(model, dm)
 
     if cfg.general.save_pytorch_model:
+        os.makedirs("saved_models", exist_ok=True)
         if cfg.general.save_best:
             best_path = trainer.checkpoint_callback.best_model_path  # type: ignore
             # extract file name without folder
@@ -71,7 +72,6 @@ def run(cfg: DictConfig) -> None:
             ).as_posix()
             torch.save(model.model.state_dict(), model_name)
         else:
-            os.makedirs("saved_models", exist_ok=True)
             model_name = "saved_models/last.pth"
             torch.save(model.model.state_dict(), model_name)
 
