@@ -1,6 +1,9 @@
 import torch
 import torch.nn as nn
-
+from torchvision import models
+from torch import nn
+import torch
+from omegaconf import DictConfig
 
 class ResNetBlock(nn.Module):
     def __init__(self, n_features):
@@ -20,7 +23,7 @@ class ResNetBlock(nn.Module):
 
 
 class ResNet(nn.Module):
-    def __init__(self, cfg):
+    def __init__(self, cfg: DictConfig):
         super(ResNet, self).__init__()
         self.params = cfg.model.params
         # First conv layers needs to output the desired number of features.
@@ -51,4 +54,42 @@ class ResNet(nn.Module):
         # reshape x so it becomes flat, except for the first dimension (which is the minibatch)
         x = x.view(x.size(0), -1)
         out = self.fc(x)
+        return out
+
+class ResNet50ImgNet(nn.Module):
+    def __init__(self, cfg: DictConfig):
+        super(ResNet50ImgNet, self).__init__()
+        self.params = cfg.model.params
+       # init a pretrained resnet
+        backbone = models.resnet50(weights="DEFAULT")
+        num_filters = backbone.fc.in_features
+        layers = list(backbone.children())[:-1]
+        self.feature_extractor = nn.Sequential(*layers)
+
+        self.classifier = nn.Linear(num_filters, self.params.num_classes)
+
+    def forward(self, x):
+        self.feature_extractor.eval()
+        with torch.no_grad():
+            representations = self.feature_extractor(x).flatten(1)
+        out = self.classifier(representations)
+        return out
+    
+class ResNet18ImgNet(nn.Module):
+    def __init__(self, cfg: DictConfig):
+        super(ResNet18ImgNet, self).__init__()
+        self.params = cfg.model.params
+       # init a pretrained resnet
+        backbone = models.resnet18(weights="DEFAULT")
+        num_filters = backbone.fc.in_features
+        layers = list(backbone.children())[:-1]
+        self.feature_extractor = nn.Sequential(*layers)
+
+        self.classifier = nn.Linear(num_filters, self.params.num_classes)
+
+    def forward(self, x):
+        self.feature_extractor.eval()
+        with torch.no_grad():
+            representations = self.feature_extractor(x).flatten(1)
+        out = self.classifier(representations)
         return out
