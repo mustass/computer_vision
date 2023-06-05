@@ -50,8 +50,8 @@ class LitCVModel(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         input, target = batch
-
-        predicted = self.model(input)
+        target = target.float()
+        predicted = self.model(input).squeeze()
         loss = self.loss(predicted, target)
         self.log(
             "train_Loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True
@@ -72,8 +72,9 @@ class LitCVModel(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx):
         input, target = batch
+        target = target.float()
+        predicted = self.model(input).squeeze()
 
-        predicted = self.model(input)
         loss = self.loss(predicted, target)
 
         self.log(
@@ -96,7 +97,9 @@ class LitCVModel(pl.LightningModule):
     def test_step(self, batch, batch_idx):
         input, target = batch
 
-        predicted = self.model(input)
+        target = target.float()
+
+        predicted = self.model(input).squeeze()
         loss = self.loss(predicted, target)
 
         self.log(

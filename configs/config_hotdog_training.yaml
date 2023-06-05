@@ -4,7 +4,7 @@ defaults:
   - private: default
   - datamodule: hotdog
   - logging: wandb
-  - loss: cross_entropy
+  - loss: bce_logits
   - metric: accuracy
   - model: resnet18_transfer
   - optimizer: adam

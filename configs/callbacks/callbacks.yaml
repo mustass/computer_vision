@@ -8,14 +8,14 @@ early_stopping:
     verbose: True
     mode: ${training.mode}
 
-#model_checkpoint:
-#  class_name: pytorch_lightning.callbacks.ModelCheckpoint
-#  params:
-#    monitor: val_${training.metric}
-#    save_top_k: 1
-#    dirpath: saved_models
-#    filename: '{epoch}-{val_${training.metric}:.6f}'
-#    mode: ${training.mode}
+model_checkpoint:
+  class_name: pytorch_lightning.callbacks.ModelCheckpoint
+  params:
+    monitor: val_${training.metric}
+    save_top_k: 1
+    dirpath: saved_models
+    filename: '{epoch}-{val_${training.metric}:.6f}'
+    mode: ${training.mode}
 
 other_callbacks:
   - class_name: pytorch_lightning.callbacks.LearningRateMonitor

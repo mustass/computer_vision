@@ -3,7 +3,7 @@ from typing import Optional
 from omegaconf import DictConfig
 from pytorch_lightning import LightningDataModule
 from torch.utils.data import DataLoader, random_split
-
+import torch
 from dl4cv.utils.technical_utils import load_obj
 
 
@@ -24,13 +24,11 @@ class CVDataModule(LightningDataModule):
         self.val = self.splits[1]
         self.test = self.dataset.test
 
-        #self.collator = load_obj(self.config.datamodule.params.collator)(self.config)
-
     def train_dataloader(self):
         assert not self.inference, "In inference mode, there is no train_dataloader."
         return DataLoader(
             self.train,
-            #collate_fn=self.collator.collate,
+            #ççcollate_fn=FloatCollator,
             batch_size=self.config.datamodule.params.batch_size,
             num_workers=self.config.datamodule.params.num_workers,
             pin_memory=self.config.datamodule.params.pin_memory,
@@ -41,7 +39,7 @@ class CVDataModule(LightningDataModule):
         assert not self.inference, "In inference mode, there is no val_dataloader."
         return DataLoader(
             self.val,
-            #collate_fn=self.collator.collate,
+            #collate_fn=FloatCollator,
             batch_size=self.config.datamodule.params.batch_size,
             num_workers=self.config.datamodule.params.num_workers,
             pin_memory=self.config.datamodule.params.pin_memory,
@@ -51,18 +49,9 @@ class CVDataModule(LightningDataModule):
         assert not self.inference, "In inference mode, there is no test_dataloader."
         return DataLoader(
             self.test,
-            #collate_fn=self.collator.collate,
+            #collate_fn=FloatCollator,
             batch_size=self.config.datamodule.params.batch_size,
             num_workers=self.config.datamodule.params.num_workers,
             pin_memory=self.config.datamodule.params.pin_memory,
         )
 
-    # def inference_dataloader(self):
-    #     assert self.inference
-    #     return DataLoader(
-    #         self.inference_data,
-    #         collate_fn=self.inference_collator.collate,
-    #         batch_size=1,
-    #         num_workers=self.config.datamodule.params.num_workers,
-    #         pin_memory=self.config.datamodule.params.pin_memory,
-    #     )
