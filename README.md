@@ -57,7 +57,7 @@ Or cpu:
 python3 ./scripts/train.py
 ```
 
-Training HotDog NotHotDog:
+Training HotDog NotHotDog (add tag for wand to gain better overview):
 ```{bash}
-python3 scripts/train.py -cn config_hotdog_training trainer.accelerator=gpu model=resnet18_transfer model.params.num_classes=1 metric.metric.params.task=binary
+python3 scripts/train.py -cn config_hotdog_training trainer.accelerator=gpu model=resnet18_transfer model.params.num_classes=1 metric.metric.params.task=binary +loggin.wandb.tags=resnet18
 ```
