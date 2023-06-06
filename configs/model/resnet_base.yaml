@@ -3,4 +3,4 @@ params:
   n_in: 3
   n_features: 64
   num_res_blocks: 6
-  num_classes: 10
+  num_classes: 1

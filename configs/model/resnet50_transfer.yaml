@@ -1,3 +1,3 @@
 class_name: dl4cv.models.ResNet50ImgNet
 params:
-  num_classes: 10
+  num_classes: 1
