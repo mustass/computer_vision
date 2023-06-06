@@ -10,18 +10,14 @@ from dl4cv.utils.technical_utils import load_obj
 class CVDataModule(LightningDataModule):
     def __init__(self, cfg: DictConfig):
         super().__init__()
-        self.config = cfg
+        self.cfg = cfg
 
     def setup(self, stage: Optional[str] = None, inference: Optional[bool] = False):
         self.inference = inference
-        self.dataset = load_obj(self.config.datamodule.params.dataset)(self.config)
+        self.dataset = load_obj(self.cfg.datamodule.params.dataset)(self.cfg)
         
-        self.splits = random_split(
-                self.dataset.train, self.config.datamodule.params.split
-            )
-        
-        self.train = self.splits[0]
-        self.val = self.splits[1]
+        self.train = self.dataset.train
+        self.val = self.dataset.val
         self.test = self.dataset.test
 
     def train_dataloader(self):
@@ -29,10 +25,11 @@ class CVDataModule(LightningDataModule):
         return DataLoader(
             self.train,
             #ççcollate_fn=FloatCollator,
-            batch_size=self.config.datamodule.params.batch_size,
-            num_workers=self.config.datamodule.params.num_workers,
-            pin_memory=self.config.datamodule.params.pin_memory,
+            batch_size=self.cfg.datamodule.params.batch_size,
+            num_workers=self.cfg.datamodule.params.num_workers,
+            pin_memory=self.cfg.datamodule.params.pin_memory,
             shuffle=True,
+            drop_last=True
         )
 
     def val_dataloader(self):
@@ -40,9 +37,10 @@ class CVDataModule(LightningDataModule):
         return DataLoader(
             self.val,
             #collate_fn=FloatCollator,
-            batch_size=self.config.datamodule.params.batch_size,
-            num_workers=self.config.datamodule.params.num_workers,
-            pin_memory=self.config.datamodule.params.pin_memory,
+            batch_size=self.cfg.datamodule.params.batch_size,
+            num_workers=self.cfg.datamodule.params.num_workers,
+            pin_memory=self.cfg.datamodule.params.pin_memory,
+            drop_last=True
         )
 
     def test_dataloader(self):
@@ -50,8 +48,8 @@ class CVDataModule(LightningDataModule):
         return DataLoader(
             self.test,
             #collate_fn=FloatCollator,
-            batch_size=self.config.datamodule.params.batch_size,
-            num_workers=self.config.datamodule.params.num_workers,
-            pin_memory=self.config.datamodule.params.pin_memory,
+            batch_size=self.cfg.datamodule.params.batch_size,
+            num_workers=self.cfg.datamodule.params.num_workers,
+            pin_memory=self.cfg.datamodule.params.pin_memory,
+            drop_last=True
         )
-

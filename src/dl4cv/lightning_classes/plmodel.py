@@ -23,6 +23,7 @@ class LitCVModel(pl.LightningModule):
                 )(**cfg.metric.metric.params)
             }
         )
+        self.save_hyperparameters()
 
     def forward(self, x, *args, **kwargs):
         out = self.model(x)
@@ -74,7 +75,6 @@ class LitCVModel(pl.LightningModule):
         input, target = batch
         target = target.float()
         predicted = self.model(input).squeeze()
-
         loss = self.loss(predicted, target)
 
         self.log(
