@@ -4,6 +4,7 @@ defaults:
   - callbacks: callbacks
   - private: default
   - datamodule: hotdog
+  - inference: saliency
   - logging: wandb
   - loss: bce_logits
   - metric: accuracy

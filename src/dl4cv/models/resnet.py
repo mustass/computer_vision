@@ -5,6 +5,7 @@ from torch import nn
 import torch
 from omegaconf import DictConfig
 
+
 class ResNetBlock(nn.Module):
     def __init__(self, n_features):
         super(ResNetBlock, self).__init__()
@@ -56,11 +57,12 @@ class ResNet(nn.Module):
         out = self.fc(x)
         return out
 
+
 class ResNet50ImgNet(nn.Module):
     def __init__(self, cfg: DictConfig):
         super(ResNet50ImgNet, self).__init__()
         self.params = cfg.model.params
-       # init a pretrained resnet
+        # init a pretrained resnet
         backbone = models.resnet50(weights="DEFAULT")
         num_filters = backbone.fc.in_features
         layers = list(backbone.children())[:-1]
@@ -74,7 +76,25 @@ class ResNet50ImgNet(nn.Module):
             representations = self.feature_extractor(x).flatten(1)
         out = self.classifier(representations)
         return out
-    
+
+
+class ResNet18ImgNet(nn.Module):
+    def __init__(self, cfg: DictConfig):
+        super(ResNet18ImgNet, self).__init__()
+        self.params = cfg.model.params
+        # init a pretrained resnet
+        backbone = models.resnet18(weights="DEFAULT")
+        num_filters = backbone.fc.in_features
+        layers = list(backbone.children())[:-1]
+        self.feature_extractor = nn.Sequential(*layers)
+
+        self.classifier = nn.Linear(num_filters, self.params.num_classes)
+
+    def forward(self, x):
+        representations = self.feature_extractor(x).flatten(1)
+        out = self.classifier(representations)
+        return out
+
 class ResNet18ImgNet(nn.Module):
     def __init__(self, cfg: DictConfig):
         super(ResNet18ImgNet, self).__init__()
@@ -89,7 +109,10 @@ class ResNet18ImgNet(nn.Module):
 
     def forward(self, x):
         self.feature_extractor.eval()
-        with torch.no_grad():
+        if self.training:
+            with torch.no_grad():
+                representations = self.feature_extractor(x).flatten(1)
+        else:
             representations = self.feature_extractor(x).flatten(1)
         out = self.classifier(representations)
         return out

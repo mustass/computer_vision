@@ -4,6 +4,9 @@ from typing import Any
 import pytorch_lightning as pl
 import torch
 from omegaconf import DictConfig
+from torch.distributions import Normal
+from torch.autograd import Variable
+
 
 from dl4cv.utils.technical_utils import load_obj
 
@@ -28,6 +31,32 @@ class LitCVModel(pl.LightningModule):
     def forward(self, x, *args, **kwargs):
         out = self.model(x)
         return out
+
+    def saliency_step(self, batch, batch_idx, sigma, num_samples, strategy):
+        input, _ = batch
+        input = input.squeeze()
+        self.model.eval()
+        sigma = sigma/(input.max() - input.min())
+        _samples = torch.randn(num_samples, *input.shape)
+        _samples = sigma * _samples + input
+        saliency_map = []
+        for _sample in _samples:
+            _sample = _sample.clone()
+            _sample = _sample.to(self.device)
+            _sample = _sample.unsqueeze(0)
+            _sample.requires_grad_().retain_grad()
+            _output = self.model(_sample)
+            _output.backward()
+            if strategy == "max":
+                _saliency_map = _sample.grad.abs().squeeze().max(0)[0]
+            elif strategy == "mean":
+                _saliency_map = _sample.grad.abs().squeeze().mean(0)[0]
+            else:
+                raise NotImplementedError
+            saliency_map.append(_saliency_map)
+        saliency_map = torch.stack(saliency_map).mean(0)
+        saliency_map = saliency_map/ saliency_map.max()
+        return saliency_map
 
     def configure_optimizers(self):
         optimizer = load_obj(self.cfg.optimizer.class_name)(
