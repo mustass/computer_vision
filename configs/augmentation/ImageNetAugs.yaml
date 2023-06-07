@@ -6,9 +6,10 @@ train:
     params:
   - class_name: torchvision.transforms.RandomHorizontalFlip
     params:
-  - class_name: torchvision.transforms.CenterCrop
+  - class_name: torchvision.transforms.RandomPerspective
     params:
-      size: 256
+      p: 0.9
+      distortion_scale: 0.2
   - class_name: torchvision.transforms.Resize
     params:
       size: [224,224]
