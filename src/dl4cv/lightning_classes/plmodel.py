@@ -36,7 +36,7 @@ class LitCVModel(pl.LightningModule):
         input, _ = batch
         input = input.squeeze()
         self.model.eval()
-        sigma = sigma/(input.max() - input.min())
+        sigma = sigma / (input.max() - input.min())
         _samples = torch.randn(num_samples, *input.shape)
         _samples = sigma * _samples + input
         saliency_map = []
@@ -55,7 +55,7 @@ class LitCVModel(pl.LightningModule):
                 raise NotImplementedError
             saliency_map.append(_saliency_map)
         saliency_map = torch.stack(saliency_map).mean(0)
-        saliency_map = saliency_map/ saliency_map.max()
+        saliency_map = saliency_map / saliency_map.max()
         return saliency_map
 
     def configure_optimizers(self):

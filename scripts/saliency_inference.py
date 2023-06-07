@@ -12,7 +12,8 @@ from dl4cv.datasets import HotDogNotHotDog
 from tqdm import tqdm
 import os
 
-def saliency_map(cfg: DictConfig,batch_size:int = 1, strategy='max') -> None:
+
+def saliency_map(cfg: DictConfig, batch_size: int = 1, strategy="max") -> None:
     """
     Run pytorch-lightning model inference
     Args:
@@ -36,12 +37,27 @@ def saliency_map(cfg: DictConfig,batch_size:int = 1, strategy='max') -> None:
     lit_model.to(device)
     saliency_maps = []
     for batch in tqdm(loader):
-        saliency_maps.append(lit_model.saliency_step(batch, 0, cfg.inference.saliency_params.sigma, cfg.inference.saliency_params.num_samples,strategy))
+        saliency_maps.append(
+            lit_model.saliency_step(
+                batch,
+                0,
+                cfg.inference.saliency_params.sigma,
+                cfg.inference.saliency_params.num_samples,
+                strategy,
+            )
+        )
 
-    if not os.path.exists(f"outputs/{cfg.inference.run_name}/saliency_maps_sigma_{cfg.inference.saliency_params.sigma}"):
-        os.makedirs(f"outputs/{cfg.inference.run_name}/saliency_maps_sigma_{cfg.inference.saliency_params.sigma}")
+    if not os.path.exists(
+        f"outputs/{cfg.inference.run_name}/saliency_maps_sigma_{cfg.inference.saliency_params.sigma}"
+    ):
+        os.makedirs(
+            f"outputs/{cfg.inference.run_name}/saliency_maps_sigma_{cfg.inference.saliency_params.sigma}"
+        )
     for i, saliency_map in enumerate(saliency_maps):
-        np.save(f"outputs/{cfg.inference.run_name}/saliency_maps_sigma_{cfg.inference.saliency_params.sigma}/saliency_map_{i}.npy", saliency_map.cpu().numpy())
+        np.save(
+            f"outputs/{cfg.inference.run_name}/saliency_maps_sigma_{cfg.inference.saliency_params.sigma}/saliency_map_{i}.npy",
+            saliency_map.cpu().numpy(),
+        )
 
 
 if __name__ == "__main__":
@@ -49,21 +65,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--run_name", help="folder_name", type=str, default="2020_06_21_04_53_55"
     )
-    parser.add_argument(
-        "--device", help="device", type=str, default="cpu"
-    )
-    parser.add_argument(
-        "--batch_size", help="batch_size", type=int, default=1
-    )
-    parser.add_argument(
-        "--sigma", help="sigma", type=float, default=0.1
-    )
-    parser.add_argument(
-        "--strategy", help="strategy", type=str, default="max"
-    )
-    parser.add_argument(
-        "--num_samples", help="num_samples", type=int, default=20
-    )
+    parser.add_argument("--device", help="device", type=str, default="cpu")
+    parser.add_argument("--batch_size", help="batch_size", type=int, default=1)
+    parser.add_argument("--sigma", help="sigma", type=float, default=0.1)
+    parser.add_argument("--strategy", help="strategy", type=str, default="max")
+    parser.add_argument("--num_samples", help="num_samples", type=int, default=20)
     args = parser.parse_args()
 
     initialize(config_path="../configs")

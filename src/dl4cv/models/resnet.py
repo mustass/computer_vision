@@ -95,11 +95,12 @@ class ResNet18ImgNet(nn.Module):
         out = self.classifier(representations)
         return out
 
+
 class ResNet18ImgNet(nn.Module):
     def __init__(self, cfg: DictConfig):
         super(ResNet18ImgNet, self).__init__()
         self.params = cfg.model.params
-       # init a pretrained resnet
+        # init a pretrained resnet
         backbone = models.resnet18(weights="DEFAULT")
         num_filters = backbone.fc.in_features
         layers = list(backbone.children())[:-1]
