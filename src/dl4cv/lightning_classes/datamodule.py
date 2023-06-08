@@ -15,7 +15,7 @@ class CVDataModule(LightningDataModule):
     def setup(self, stage: Optional[str] = None, inference: Optional[bool] = False):
         self.inference = inference
         self.dataset = load_obj(self.cfg.datamodule.params.dataset)(self.cfg)
-        
+
         self.train = self.dataset.train
         self.val = self.dataset.val
         self.test = self.dataset.test
@@ -24,32 +24,32 @@ class CVDataModule(LightningDataModule):
         assert not self.inference, "In inference mode, there is no train_dataloader."
         return DataLoader(
             self.train,
-            #ççcollate_fn=FloatCollator,
+            # ççcollate_fn=FloatCollator,
             batch_size=self.cfg.datamodule.params.batch_size,
             num_workers=self.cfg.datamodule.params.num_workers,
             pin_memory=self.cfg.datamodule.params.pin_memory,
             shuffle=True,
-            drop_last=True
+            drop_last=True,
         )
 
     def val_dataloader(self):
         assert not self.inference, "In inference mode, there is no val_dataloader."
         return DataLoader(
             self.val,
-            #collate_fn=FloatCollator,
+            # collate_fn=FloatCollator,
             batch_size=self.cfg.datamodule.params.batch_size,
             num_workers=self.cfg.datamodule.params.num_workers,
             pin_memory=self.cfg.datamodule.params.pin_memory,
-            drop_last=True
+            drop_last=True,
         )
 
     def test_dataloader(self):
         assert not self.inference, "In inference mode, there is no test_dataloader."
         return DataLoader(
             self.test,
-            #collate_fn=FloatCollator,
+            # collate_fn=FloatCollator,
             batch_size=self.cfg.datamodule.params.batch_size,
             num_workers=self.cfg.datamodule.params.num_workers,
             pin_memory=self.cfg.datamodule.params.pin_memory,
-            drop_last=True
+            drop_last=True,
         )

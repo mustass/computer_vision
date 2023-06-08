@@ -78,6 +78,7 @@ def run(cfg: DictConfig) -> None:
     if cfg.general.predict:
         trainer.test(model, datamodule=dm, ckpt_path="best")
 
+
 @hydra.main(config_path="../configs", config_name="config_training")
 def run_model(cfg: DictConfig) -> None:
     os.makedirs("logs", exist_ok=True)

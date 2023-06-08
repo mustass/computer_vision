@@ -1,0 +1,7 @@
+run_name: lolsies
+device: cuda
+
+saliency_params:
+  sigma: 0.1
+  num_samples: 100
+  
