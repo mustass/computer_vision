@@ -53,3 +53,46 @@ class CVDataModule(LightningDataModule):
             pin_memory=self.cfg.datamodule.params.pin_memory,
             drop_last=True,
         )
+
+
+class SegmentDataModule(LightningDataModule):
+    def __init__(self, cfg: DictConfig):
+        super().__init__()
+        self.cfg = cfg
+
+    def setup(self, stage: Optional[str] = None, inference: Optional[bool] = False):
+        self.inference = inference
+        self.train, self.val, self.test = load_obj(self.cfg.datamodule.params.bulder)(
+            self.cfg
+        )
+
+    def train_dataloader(self):
+        assert not self.inference, "In inference mode, there is no train_dataloader."
+        return DataLoader(
+            self.train,
+            batch_size=self.cfg.datamodule.params.batch_size,
+            num_workers=self.cfg.datamodule.params.num_workers,
+            pin_memory=self.cfg.datamodule.params.pin_memory,
+            shuffle=True,
+            drop_last=True,
+        )
+
+    def val_dataloader(self):
+        assert not self.inference, "In inference mode, there is no val_dataloader."
+        return DataLoader(
+            self.val,
+            batch_size=self.cfg.datamodule.params.batch_size,
+            num_workers=self.cfg.datamodule.params.num_workers,
+            pin_memory=self.cfg.datamodule.params.pin_memory,
+            drop_last=True,
+        )
+
+    def test_dataloader(self):
+        assert not self.inference, "In inference mode, there is no test_dataloader."
+        return DataLoader(
+            self.test,
+            batch_size=self.cfg.datamodule.params.batch_size,
+            num_workers=self.cfg.datamodule.params.num_workers,
+            pin_memory=self.cfg.datamodule.params.pin_memory,
+            drop_last=True,
+        )
