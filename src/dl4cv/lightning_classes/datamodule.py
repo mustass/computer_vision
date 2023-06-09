@@ -62,7 +62,7 @@ class SegmentDataModule(LightningDataModule):
 
     def setup(self, stage: Optional[str] = None, inference: Optional[bool] = False):
         self.inference = inference
-        self.train, self.val, self.test = load_obj(self.cfg.datamodule.params.bulder)(
+        self.train, self.val, self.test = load_obj(self.cfg.datamodule.params.builder)(
             self.cfg
         )
 
