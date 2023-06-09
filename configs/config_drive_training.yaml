@@ -20,7 +20,7 @@ general:
   run_name: run
   logs_folder_name: logs
   workspace: computervision02514
-  project_name: DL4CV
+  project_name: Segmentation_Project
   device: gpu
   log_code: False
   save_pytorch_model: True
