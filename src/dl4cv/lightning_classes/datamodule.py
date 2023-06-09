@@ -62,7 +62,9 @@ class SegmentDataModule(LightningDataModule):
 
     def setup(self, stage: Optional[str] = None, inference: Optional[bool] = False):
         self.inference = inference
-        self.train, self.val, self.test = load_obj(self.cfg.datamodule.params.bulder)(self.cfg)
+        self.train, self.val, self.test = load_obj(self.cfg.datamodule.params.bulder)(
+            self.cfg
+        )
 
     def train_dataloader(self):
         assert not self.inference, "In inference mode, there is no train_dataloader."
