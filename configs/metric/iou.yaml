@@ -2,4 +2,5 @@ metric:
   class_name: torchmetrics.JaccardIndex
   metric_name: iou
   params:
+    task: binary
     num_classes: ${training.n_classes}

@@ -1,0 +1,44 @@
+metric:
+  class_name: torchmetrics.Accuracy
+  metric_name: accuracy
+  params:
+    task: binary
+    threshold: 0.5
+    num_classes: ${training.n_classes}
+    top_k: 1
+
+other_metrics:
+  - class_name: torchmetrics.Accuracy
+    metric_name: accuracy_07
+    params:
+      task: binary
+      threshold: 0.7
+      num_classes: ${training.n_classes}
+      top_k: 2
+
+  - class_name: torchmetrics.Recall
+    metric_name: recall_sensitivity
+    params:
+      task: binary
+      threshold: 0.5
+      num_classes: ${training.n_classes} 
+
+  - class_name: torchmetrics.JaccardIndex
+    metric_name: iou
+    params:
+      task: binary
+      num_classes: ${training.n_classes}
+  
+  - class_name: torchmetrics.Specificity
+    metric_name: specificity
+    params:
+      task: binary
+      threshold: 0.5
+      num_classes: ${training.n_classes}
+      top_k: 1
+  
+  - class_name: torchmetrics.Dice
+    metric_name: dice_overlap
+    params:
+      threshold: 0.5
+  

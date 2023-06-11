@@ -7,12 +7,12 @@ defaults:
   - inference: saliency
   - logging: wandb
   - loss: bce_logits
-  - metric: accuracy
+  - metric: segmentation_metrics
   - model: unet
   - optimizer: adam
   - scheduler: cosine
   - trainer: default_trainer
-  - training: default_training
+  - training: segmentation_training
   - override hydra/hydra_logging: colorlog
   - override hydra/job_logging: colorlog
 
