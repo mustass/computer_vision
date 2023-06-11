@@ -1,6 +1,6 @@
 defaults:
   - _self_
-  - augmentation: basic_augs
+  - augmentation: no_augs
   - callbacks: callbacks
   - private: default
   - datamodule: drive
