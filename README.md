@@ -57,7 +57,12 @@ Or cpu:
 python3 ./scripts/train.py
 ```
 
-Training HotDog NotHotDog:
+### Training HotDog NotHotDog:
 ```{bash}
 python3 scripts/train.py -cn config_hotdog_training trainer.accelerator=gpu model=resnet18_transfer model.params.num_classes=1 metric.metric.params.task=binary general.run_name=xxxxxxx
 ```
+### Training Segmentation Models:
+```{bash}
+python3 scripts/train.py -cn config_ph2_training trainer.accelerator=gpu general.run_name=xxxxxxx  general.project_name=project2 model=unet
+```
+
