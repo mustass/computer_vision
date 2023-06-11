@@ -1,0 +1,7 @@
+metric:
+  classname: torchmetrics.Recall
+  metric_name: recall_sensitivity
+  params:
+    task: binary
+    threshold: 0.5
+    num_classes: ${training.n_classes} 

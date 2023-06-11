@@ -1,0 +1,22 @@
+train:
+  - class_name: albumentations.Resize
+    params:
+      height: 512
+      width: 512
+  - class_name: albumentations.Normalize
+    params:
+      p: 1.0
+  - class_name: albumentations.pytorch.transforms.ToTensorV2
+    params:
+      p: 1.0
+test:
+  - class_name: albumentations.Resize
+    params:
+      height: 512
+      width: 512
+  - class_name: albumentations.Normalize
+    params:
+        p: 1.0
+  - class_name: albumentations.pytorch.transforms.ToTensorV2
+    params:
+        p: 1.0

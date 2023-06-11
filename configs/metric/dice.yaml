@@ -1,0 +1,5 @@
+metric:
+  classname: torchmetrics.Dice
+  metric_name: dice_overlap
+  params:
+    num_classes: ${training.n_classes} 

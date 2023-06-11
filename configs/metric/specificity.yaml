@@ -1,6 +1,6 @@
 metric:
-  class_name: torchmetrics.Accuracy
-  metric_name: accuracy
+  class_name: torchmetrics.Specificity
+  metric_name: specificity
   params:
     task: binary
     threshold: 0.5
