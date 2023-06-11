@@ -3,7 +3,7 @@ defaults:
   - augmentation: basic_augs
   - callbacks: callbacks
   - private: default
-  - datamodule: PH2
+  - datamodule: ph2
   - inference: saliency
   - logging: wandb
   - loss: bce_logits
