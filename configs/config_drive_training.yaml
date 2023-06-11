@@ -10,7 +10,7 @@ defaults:
   - metric: segmentation_metrics
   - model: unet
   - optimizer: adam
-  - scheduler: cosine
+  - scheduler: constatnlr
   - trainer: default_trainer
   - training: segmentation_training
   - override hydra/hydra_logging: colorlog
