@@ -27,9 +27,11 @@ class LitCVModel(pl.LightningModule):
             }
         )
 
-        if 'other_metrics' in self.cfg.metric.keys():
+        if "other_metrics" in self.cfg.metric.keys():
             for metric in self.cfg.metric.other_metrics:
-                self.metrics.update({metric.metric_name: load_obj(metric.class_name)(**metric.params)})
+                self.metrics.update(
+                    {metric.metric_name: load_obj(metric.class_name)(**metric.params)}
+                )
 
         self.save_hyperparameters()
 
@@ -170,9 +172,11 @@ class LitSegModel(pl.LightningModule):
             }
         )
 
-        if 'other_metrics' in self.cfg.metric.keys():
+        if "other_metrics" in self.cfg.metric.keys():
             for metric in self.cfg.metric.other_metrics:
-                self.metrics.update({metric.metric_name: load_obj(metric.class_name)(**metric.params)})
+                self.metrics.update(
+                    {metric.metric_name: load_obj(metric.class_name)(**metric.params)}
+                )
 
         self.save_hyperparameters()
 

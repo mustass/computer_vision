@@ -49,7 +49,7 @@ class PH2(torch.utils.data.Dataset):
         )
         target = f"{sample_dir}/{sample_dir.name}_lesion/{sample_dir.name}_lesion.bmp"
         img = cv2.imread(image_path)
-        mask = cv2.imread(target, cv2.IMREAD_GRAYSCALE)/255
+        mask = cv2.imread(target, cv2.IMREAD_GRAYSCALE) / 255
         if self.train:
             transformed = self.train_trnsfrms(image=img, mask=mask)
             img = transformed["image"]
@@ -101,7 +101,7 @@ class DRIVE(torch.utils.data.Dataset):
         img = Image.open(str(image_path))
         mask = Image.open(str(target))
         img = np.array(img)
-        mask = np.array(mask)/255
+        mask = np.array(mask) / 255
         if self.train:
             transformed = self.train_trnsfrms(image=img, mask=mask)
             img = transformed["image"]

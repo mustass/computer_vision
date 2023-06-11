@@ -3,31 +3,32 @@ import torch
 import torch.nn.functional as F
 from omegaconf import DictConfig
 
+
 class UNet(nn.Module):
     def __init__(self, cfg: DictConfig):
         super().__init__()
 
         # encoder (downsampling)
         self.enc_conv0 = nn.Conv2d(3, 64, 3, padding=1)
-        self.downsample0 = nn.Conv2d(64,64,2,stride=2)  # 128 -> 64
+        self.downsample0 = nn.Conv2d(64, 64, 2, stride=2)  # 128 -> 64
         self.enc_conv1 = nn.Conv2d(64, 64, 3, padding=1)
-        self.downsample1 = nn.Conv2d(64,64,2,stride=2)  # 64 -> 32
+        self.downsample1 = nn.Conv2d(64, 64, 2, stride=2)  # 64 -> 32
         self.enc_conv2 = nn.Conv2d(64, 64, 3, padding=1)
-        self.downsample2 = nn.Conv2d(64,64,2,stride=2)  # 32 -> 16
+        self.downsample2 = nn.Conv2d(64, 64, 2, stride=2)  # 32 -> 16
         self.enc_conv3 = nn.Conv2d(64, 64, 3, padding=1)
-        self.downsample3 = nn.Conv2d(64,64,2,stride=2)  # 16 -> 8
+        self.downsample3 = nn.Conv2d(64, 64, 2, stride=2)  # 16 -> 8
 
         # bottleneck
         self.bottleneck_conv = nn.Conv2d(64, 64, 3, padding=1)
 
         # decoder (upsampling)
-        self.upsample0 = nn.ConvTranspose2d(64,64,2,2)  # 8 -> 16
+        self.upsample0 = nn.ConvTranspose2d(64, 64, 2, 2)  # 8 -> 16
         self.dec_conv0 = nn.Conv2d(128, 64, 3, padding=1)
-        self.upsample1 = nn.ConvTranspose2d(64,64,2,2)  # 16 -> 32
+        self.upsample1 = nn.ConvTranspose2d(64, 64, 2, 2)  # 16 -> 32
         self.dec_conv1 = nn.Conv2d(128, 64, 3, padding=1)
-        self.upsample2 = nn.ConvTranspose2d(64,64,2,2)  # 32 -> 64
+        self.upsample2 = nn.ConvTranspose2d(64, 64, 2, 2)  # 32 -> 64
         self.dec_conv2 = nn.Conv2d(128, 64, 3, padding=1)
-        self.upsample3 = nn.ConvTranspose2d(64,64,2,2)  # 64 -> 128
+        self.upsample3 = nn.ConvTranspose2d(64, 64, 2, 2)  # 64 -> 128
         self.dec_conv3 = nn.Conv2d(128, 1, 3, padding=1)
 
     def forward(self, x):
