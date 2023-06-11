@@ -3,6 +3,6 @@ params:
   builder: dl4cv.datasets.build_drive
   path: /dtu/datasets1/02514/DRIVE
   split: [14,3]
-  batch_size: 6
+  batch_size: 3
   num_workers: 4
   pin_memory: True

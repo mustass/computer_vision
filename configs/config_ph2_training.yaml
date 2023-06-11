@@ -8,7 +8,7 @@ defaults:
   - logging: wandb
   - loss: bce_logits
   - metric: accuracy
-  - model: resnet18_transfer
+  - model: unet
   - optimizer: adam
   - scheduler: cosine
   - trainer: default_trainer
