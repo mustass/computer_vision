@@ -5,3 +5,4 @@ n_classes: 1
 seed: 666
 debug: False
 lightning_module_name: dl4cv.lightning_classes.plmodel.LitSegModel
+save_plots: True

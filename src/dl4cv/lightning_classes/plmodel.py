@@ -9,6 +9,7 @@ from torch.autograd import Variable
 
 
 from dl4cv.utils.technical_utils import load_obj
+from dl4cv.utils.segmentation_utils import plot_results
 
 
 class LitCVModel(pl.LightningModule):
@@ -163,6 +164,7 @@ class LitSegModel(pl.LightningModule):
 
         self.model = load_obj(cfg.model.class_name)(cfg=cfg)
         self.loss = load_obj(cfg.loss.class_name)()
+        self.do_plots = cfg.training.save_plots
 
         self.metrics = torch.nn.ModuleDict(
             {
@@ -247,6 +249,21 @@ class LitSegModel(pl.LightningModule):
                 logger=True,
             )
 
+        if self.do_plots:
+            for logger in self.loggers:
+                if isinstance(logger, pl.loggers.WandbLogger):
+                    wandb_logger = logger
+            plot_results(
+                predicted,
+                target,
+                input,
+                self.current_epoch,
+                batch_idx,
+                self.cfg.datamodule.params.batch_size,
+                self.cfg.callbacks.model_checkpoint.params.dirpath,
+                wandb_logger= wandb_logger
+            )
+
         return loss
 
     def test_step(self, batch, batch_idx):
@@ -270,6 +287,22 @@ class LitSegModel(pl.LightningModule):
                 on_epoch=True,
                 prog_bar=True,
                 logger=True,
+            )
+
+        if self.do_plots:
+            for logger in self.loggers:
+                if isinstance(logger, pl.loggers.WandbLogger):
+                    wandb_logger = logger
+            plot_results(
+                predicted,
+                target,
+                input,
+                self.current_epoch,
+                batch_idx,
+                self.cfg.datamodule.params.batch_size,
+                self.cfg.callbacks.model_checkpoint.params.dirpath,
+                test=True,
+                wandb_logger=wandb_logger
             )
 
         return loss
