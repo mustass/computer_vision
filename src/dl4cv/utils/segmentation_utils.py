@@ -28,7 +28,7 @@ def plot_results(preds, labels, images, epoch, batch_index , batch_size, dir_pat
         axarr[2,k].axis("off")
     
 
-    string = f"validation_e_{epoch}_b_{batch_index}" if not test else f"test_e_{epoch}"
+    string = f"validation_e_{epoch}_b_{batch_index}" if not test else f"test_e_{epoch}_b_{batch_index}"
 
     if not os.path.exists(dir_path + "/plots"):
         os.makedirs(dir_path + "/plots")
