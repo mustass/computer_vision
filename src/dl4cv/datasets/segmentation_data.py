@@ -14,7 +14,7 @@ class PH2(torch.utils.data.Dataset):
     def __init__(self, cfg: DictConfig, train=True, indices=None):
         super().__init__()
         self.cfg = cfg
-
+        self.ToTensor = transforms.ToTensor()
         self.train = train
         self.train_trnsfrms = A.Compose(
             [
@@ -49,15 +49,15 @@ class PH2(torch.utils.data.Dataset):
         target = f"{sample_dir}/{sample_dir.name}_lesion/{sample_dir.name}_lesion.bmp"
         img = cv2.imread(image_path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        mask = cv2.imread(target, cv2.IMREAD_GRAYSCALE) / 255
+        mask = cv2.imread(target, cv2.IMREAD_GRAYSCALE)
         if self.train:
             transformed = self.train_trnsfrms(image=img, mask=mask)
-            img = transformed["image"]
-            mask = transformed["mask"]
+            img =  self.ToTensor(transformed["image"])
+            mask = self.ToTensor(transformed["mask"]).squeeze()
         else:
             transformed = self.test_trnsfrms(image=img, mask=mask)
-            img = transformed["image"]
-            mask = transformed["mask"]
+            img =  self.ToTensor(transformed["image"])
+            mask = self.ToTensor(transformed["mask"]).squeeze()
         return img, mask
 
 
@@ -66,7 +66,7 @@ class DRIVE(torch.utils.data.Dataset):
         super().__init__()
         self.cfg = cfg
         self.train = train
-
+        self.ToTensor = transforms.ToTensor()
         self.train_trnsfrms = A.Compose(
             [
                 load_obj(aug.class_name)(**aug.params)
@@ -104,14 +104,12 @@ class DRIVE(torch.utils.data.Dataset):
         mask = np.array(mask) / 255
         if self.train:
             transformed = self.train_trnsfrms(image=img, mask=mask)
-            img = transformed["image"]
-            mask = transformed["mask"]
-            img = img/255.
+            img = self.ToTensor(transformed["image"])
+            mask = self.ToTensor(transformed["mask"]).squeeze()
         else:
             transformed = self.test_trnsfrms(image=img, mask=mask)
-            img = transformed["image"]
-            img = img / 255.
-            mask = transformed["mask"]
+            img = self.ToTensor(transformed["image"])
+            mask = self.ToTensor(transformed["mask"]).squeeze()
         return img, mask
 
 

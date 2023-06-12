@@ -1,6 +1,6 @@
 metric:
-  class_name: torchmetrics.Accuracy
-  metric_name: accuracy
+  class_name: torchmetrics.Specificity
+  metric_name: specificity
   params:
     task: binary
     threshold: 0.5
@@ -14,7 +14,15 @@ other_metrics:
       task: binary
       threshold: 0.7
       num_classes: ${training.n_classes}
-      top_k: 2
+      top_k: 1
+  
+  - class_name: torchmetrics.Accuracy
+    metric_name: accuracy
+    params:
+      task: binary
+      threshold: 0.5
+      num_classes: ${training.n_classes}
+      top_k: 1
 
   - class_name: torchmetrics.Recall
     metric_name: recall_sensitivity

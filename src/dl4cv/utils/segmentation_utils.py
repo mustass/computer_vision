@@ -10,11 +10,9 @@ def plot_results(preds, labels, images, epoch, batch_index , batch_size, dir_pat
     A function to plot the results of the segmentation
     and save them in the output folder of the run
     """
-
-    # Define ImageNet mean and std
   
-    plt.rcParams["figure.figsize"] = [18, 6]
-    preds = sigmoid(preds)
+    plt.rcParams["figure.figsize"] = [7, 7]
+    preds = sigmoid(preds) > 0.5
     f, axarr = plt.subplots(3,batch_size)
     for k in range(batch_size):    
         img = images[k].cpu().numpy()
