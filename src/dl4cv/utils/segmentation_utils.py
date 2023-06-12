@@ -11,13 +11,19 @@ def plot_results(preds, labels, images, epoch, batch_index , batch_size, dir_pat
     and save them in the output folder of the run
     """
 
+    # Define ImageNet mean and std
+    mean = np.array([0.485, 0.456, 0.406])
+    std = np.array([0.229, 0.224, 0.225])
+
+
     plt.rcParams["figure.figsize"] = [18, 6]
     preds = sigmoid(preds)
     f, axarr = plt.subplots(3,batch_size)
     for k in range(batch_size):    
         img = images[k].cpu().numpy()
         img = np.rollaxis(img, 0, 3)
-        axarr[0,k].imshow(img, norm='linear', cmap="gray")
+        img = img*std+mean
+        axarr[0,k].imshow(img)
         axarr[0,k].title.set_text("Real")
         axarr[0,k].axis("off")
         axarr[1,k].imshow(preds[k].cpu().numpy(), cmap="gray")
