@@ -49,6 +49,7 @@ class PH2(torch.utils.data.Dataset):
         )
         target = f"{sample_dir}/{sample_dir.name}_lesion/{sample_dir.name}_lesion.bmp"
         img = cv2.imread(image_path)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         mask = cv2.imread(target, cv2.IMREAD_GRAYSCALE) / 255
         if self.train:
             transformed = self.train_trnsfrms(image=img, mask=mask)
