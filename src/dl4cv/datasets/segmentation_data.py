@@ -9,14 +9,15 @@ import cv2
 from omegaconf import DictConfig
 from torchvision import transforms
 from dl4cv.utils.technical_utils import load_obj
-
+from dl4cv.utils.utils import set_seed
 
 class PH2(torch.utils.data.Dataset):
-    def __init__(self, cfg: DictConfig, train=True, indices=None):
+    def __init__(self, cfg: DictConfig, train=True, test=False, indices=None):
         super().__init__()
         self.cfg = cfg
 
         self.train = train
+        self.test = test
         self.train_trnsfrms = A.Compose(
             [
                 load_obj(aug.class_name)(**aug.params)
@@ -47,6 +48,8 @@ class PH2(torch.utils.data.Dataset):
         image_path = (
             f"{sample_dir}/{sample_dir.name}_Dermoscopic_Image/{sample_dir.name}.bmp"
         )
+        if self.test:
+            print(image_path)
         target = f"{sample_dir}/{sample_dir.name}_lesion/{sample_dir.name}_lesion.bmp"
         img = cv2.imread(image_path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -107,9 +110,11 @@ class DRIVE(torch.utils.data.Dataset):
             transformed = self.train_trnsfrms(image=img, mask=mask)
             img = transformed["image"]
             mask = transformed["mask"]
+            img = img/255.
         else:
             transformed = self.test_trnsfrms(image=img, mask=mask)
             img = transformed["image"]
+            img = img / 255.
             mask = transformed["mask"]
         return img, mask
 
@@ -136,6 +141,7 @@ def build_drive(cfg: DictConfig):
 
 
 def build_ph2(cfg: DictConfig):
+    set_seed(cfg.training.seed)
     indices = np.random.permutation(np.arange(200))
     train = PH2(cfg, indices=indices[: cfg.datamodule.params.split[0]])
     val = PH2(
@@ -149,6 +155,7 @@ def build_ph2(cfg: DictConfig):
     test = PH2(
         cfg,
         train=False,
+        test=True,
         indices=indices[
             cfg.datamodule.params.split[0] + cfg.datamodule.params.split[1] :
         ],
