@@ -6,6 +6,8 @@ train:
   - class_name: albumentations.Normalize
     params:
       p: 1.0
+      mean: [0.5, 0.5, 0.5]
+      std: [0.5, 0.5, 0.5]
   - class_name: albumentations.pytorch.transforms.ToTensorV2
     params:
       p: 1.0
@@ -17,6 +19,8 @@ test:
   - class_name: albumentations.Normalize
     params:
         p: 1.0
+        mean: [0.5, 0.5, 0.5]
+        std: [0.5, 0.5, 0.5]
   - class_name: albumentations.pytorch.transforms.ToTensorV2
     params:
         p: 1.0

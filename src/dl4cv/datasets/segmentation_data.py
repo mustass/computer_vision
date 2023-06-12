@@ -10,7 +10,6 @@ from omegaconf import DictConfig
 from torchvision import transforms
 from dl4cv.utils.technical_utils import load_obj
 
-
 class PH2(torch.utils.data.Dataset):
     def __init__(self, cfg: DictConfig, train=True, indices=None):
         super().__init__()
@@ -107,9 +106,11 @@ class DRIVE(torch.utils.data.Dataset):
             transformed = self.train_trnsfrms(image=img, mask=mask)
             img = transformed["image"]
             mask = transformed["mask"]
+            img = img/255.
         else:
             transformed = self.test_trnsfrms(image=img, mask=mask)
             img = transformed["image"]
+            img = img / 255.
             mask = transformed["mask"]
         return img, mask
 

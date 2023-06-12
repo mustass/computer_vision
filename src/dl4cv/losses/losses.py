@@ -97,7 +97,7 @@ class FocalLoss:
 
 
 class DiceLoss:
-    
+
     def __init__(self) -> None:
         pass
 
