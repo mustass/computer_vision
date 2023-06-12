@@ -1,2 +1,4 @@
 
 class_name: torch.nn.BCEWithLogitsLoss
+params:
+  pos_weight: 1.0

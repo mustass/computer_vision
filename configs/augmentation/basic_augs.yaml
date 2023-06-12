@@ -2,12 +2,16 @@
 train:
   - class_name: albumentations.Flip
     params:
-      p: 0.5
-  - class_name: albumentations.ShiftScaleRotate
+      p: 1
+  - class_name: albumentations.RandomRotate90
     params:
-      shift_limit: 0.0625
-      scale_limit: 0.1
-      rotate_limit: 15
+      p: 1
+  - class_name: albumentations.ElasticTransform
+    params:
+      p: 1
+      alpha: 120
+      sigma: 6
+      alpha_affine: 3.6
   - class_name: albumentations.Resize
     params:
       height: 512
