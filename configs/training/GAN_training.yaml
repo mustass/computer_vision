@@ -4,4 +4,4 @@ metric: ${metric.metric.metric_name}
 mode: "min"
 seed: 666
 debug: False
-lightning_module_name: dl4cv.lightning_classes.LitGANModel
+lightning_module_name: dl4cv.lightning_classes.ganmodule_test.GAN

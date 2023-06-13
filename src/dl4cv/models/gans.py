@@ -29,7 +29,6 @@ class Generator(nn.Module):
     def forward(self, z):
         img = self.model(z)
         img = img.view(img.size(0), *self.img_shape)
-        print(f'img requires grad: {img.requires_grad}')
         return img
     
 
@@ -50,5 +49,4 @@ class Discriminator(nn.Module):
     def forward(self, img):
         img_flat = img.view(img.size(0), -1)
         validity = self.model(img_flat)
-        print(f'Validity requires grad: {validity.requires_grad}')
         return validity
