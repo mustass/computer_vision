@@ -1,0 +1,7 @@
+datamodule_name: dl4cv.lightning_classes.MNISTDataModule
+params:
+  batch_size: 64
+  num_workers: 4
+  img_size: [1, 28, 28]
+  data_dir: data/mnist
+  pin_memory: True

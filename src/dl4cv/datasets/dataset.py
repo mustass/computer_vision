@@ -10,6 +10,7 @@ from torch.utils.data import random_split
 from dl4cv.utils.technical_utils import load_obj
 
 
+
 class CIFAR10(torch.utils.data.Dataset):
     def __init__(self, cfg: DictConfig):
         super().__init__()
@@ -64,3 +65,20 @@ class HotDogNotHotDog(torch.utils.data.Dataset):
 
         self.val = self.splits[0]
         self.test = self.splits[1]
+
+class MNIST(torch.utils.data.Dataset):
+    def __init__(self, cfg: DictConfig):
+        super().__init__()
+        self.cfg = cfg
+        self.train = T.datasets.MNIST(
+            root=str(Path(get_original_cwd()) / "data"),
+            download=True,
+            train=True,
+            transform=T.transforms.ToTensor(),
+        )
+        self.test = T.datasets.MNIST(
+            root=str(Path(get_original_cwd()) / "data"),
+            download=True,
+            train=False,
+            transform=T.transforms.ToTensor(),
+        )

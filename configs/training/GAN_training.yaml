@@ -1,0 +1,7 @@
+lr_discriminator: 2e-4
+lr_generator: 2e-4
+metric: ${metric.metric.metric_name}
+mode: "min"
+seed: 666
+debug: False
+lightning_module_name: dl4cv.lightning_classes.LitGANModel

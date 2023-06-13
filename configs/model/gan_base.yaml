@@ -1,0 +1,12 @@
+generator:
+  class_name: dl4cv.models.Generator
+  params:
+    latent_dim: 100
+    img_shape: ${datamodule.params.img_size}
+
+
+discriminator:
+  class_name: dl4cv.models.Discriminator
+  params:
+    img_shape: ${datamodule.params.img_size}
+

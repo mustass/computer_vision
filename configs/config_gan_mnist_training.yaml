@@ -1,0 +1,34 @@
+defaults:
+  - _self_
+  - callbacks: callbacks
+  - private: default
+  - datamodule: mnist
+  - logging: loggers
+  - loss: bce
+  - metric: kid
+  - model: gan_base
+  - optimizer: gan_basic
+  - scheduler: gan_scheduler
+  - trainer: default_trainer
+  - training: GAN_training
+  - override hydra/hydra_logging: colorlog
+  - override hydra/job_logging: colorlog
+
+general:
+  run_name: gan_run
+  logs_folder_name: logs
+  workspace: computervision02514
+  project_name: GAN_exercise
+  device: cpu
+  log_code: False
+  save_pytorch_model: True
+  save_best: True
+  convert_to_jit: True
+  predict: False
+
+hydra:
+  run:
+    dir: outputs/${now:%Y-%m-%d_%H-%M-%S}
+  sweep:
+    dir: outputs/${now:%Y-%m-%d_%H-%M-%S}
+    #subdir: ${now:%Y-%m-%d_%H-%M-%S}_${hydra.job.num}_${datamodule.fold_n}

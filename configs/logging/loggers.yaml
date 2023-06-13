@@ -12,13 +12,15 @@ loggers:
 
   - class_name: pytorch_lightning.loggers.TensorBoardLogger
     params:
-      save_dir: .
-      name: .
+      save_dir: ${general.logs_folder_name}
+      name: ${general.run_name}
 
-#  - class_name: pytorch_lightning.loggers.CometLogger
-#    params:
-#      save_dir: ${general.logs_folder_name}
-#      workspace: ${general.workspace}
-#      project_name: ${general.project_name}
-#      api_key: ${private.comet_api}
-#      experiment_name: ${general.run_name}
+  - class_name: pytorch_lightning.loggers.WandbLogger
+    params:
+      save_dir: ${general.logs_folder_name}
+      entity: ${general.workspace}
+      #workspace: ${general.workspace}
+      project: ${general.project_name}
+      #api_key: ${private.wandb_api_key}
+      name: ${general.run_name}
+

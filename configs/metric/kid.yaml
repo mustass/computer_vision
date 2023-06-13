@@ -1,0 +1,5 @@
+metric:
+  class_name: dl4cv.metrics.KID
+  metric_name: KID
+  params:
+    subset_size: 10
