@@ -26,6 +26,7 @@ class Taco(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         img_path = self.coco.loadImgs(self.index[idx])[0]['file_name']
         img = cv2.imread(str(self.dataset_path/img_path))
+        
         an_ids = self.coco.getAnnIds(imgIds=self.coco.loadImgs(self.index[idx])[0]['id'],iscrowd=None)
         print(len(an_ids))
         anns_sel = self.coco.loadAnns(an_ids)
