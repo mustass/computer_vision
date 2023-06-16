@@ -13,12 +13,13 @@ from torchvision import transforms
 import json
 
 class Taco(torch.utils.data.Dataset):
-    def __init__(self, cfg: DictConfig, train=True, indices=None,coco_obj=None):
+    def __init__(self, cfg: DictConfig, train=True, indices=None,coco_obj=None,catids=None):
         super().__init__()
         self.cfg = cfg
         self.dataset_path = Path(cfg.datamodule.params.path)        
         self.coco = coco_obj
         self.index = indices
+        self.catids = catids
 
     def __len__(self):
         return len(self.index)
@@ -27,11 +28,10 @@ class Taco(torch.utils.data.Dataset):
         img_path = self.coco.loadImgs(self.index[idx])[0]['file_name']
         img = cv2.imread(str(self.dataset_path/img_path))
         
-        an_ids = self.coco.getAnnIds(imgIds=self.coco.loadImgs(self.index[idx])[0]['id'],iscrowd=None)
-        print(len(an_ids))
+        an_ids = self.coco.getAnnIds(imgIds=self.coco.loadImgs(self.index[idx])[0]['id'],iscrowd=None, catIds=self.catids)
         anns_sel = self.coco.loadAnns(an_ids)
-        print(anns_sel[0])
-        return img, anns_sel[0]['bbox']
+        
+        return img, [ann['bbox'] for ann in anns_sel]
 
 def build_taco(cfg: DictConfig, category_name = "Bottle"):
     
@@ -57,7 +57,7 @@ def build_taco(cfg: DictConfig, category_name = "Bottle"):
             imgIds += (coco.getImgIds(catIds=catId))
         imgIds = list(set(imgIds))
 
-    dataset = Taco(cfg,coco_obj=coco,indices=imgIds)
+    dataset = Taco(cfg, coco_obj=coco, indices=imgIds, catids=catIds)
     
     len_dataset = len(dataset)
 
@@ -65,6 +65,7 @@ def build_taco(cfg: DictConfig, category_name = "Bottle"):
     train_size = int(0.8 * len_dataset)
     val_size = int(0.1 * len_dataset)
     test_size = len_dataset - train_size-val_size
+
     train_dataset,val_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_size,val_size, test_size])
 
     return train_dataset,val_dataset,test_dataset
