@@ -20,6 +20,9 @@ class Taco(torch.utils.data.Dataset):
         self.coco = coco_obj
         self.index = indices
         self.catids = catids
+        self.scalefactor = cfg.datamodule.params.scalefactor
+
+        assert isinstance(self.scalefactor, int), 'Scale factor must be an integer'
 
     def __len__(self):
         return len(self.index)
@@ -27,11 +30,16 @@ class Taco(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         img_path = self.coco.loadImgs(self.index[idx])[0]['file_name']
         img = cv2.imread(str(self.dataset_path/img_path))
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+        img = img[::self.scalefactor,::self.scalefactor,:] # Downsample image
         
         an_ids = self.coco.getAnnIds(imgIds=self.coco.loadImgs(self.index[idx])[0]['id'],iscrowd=None, catIds=self.catids)
         anns_sel = self.coco.loadAnns(an_ids)
+
+        bboxes = np.array([ann['bbox'] for ann in anns_sel])/self.scalefactor
         
-        return img, [ann['bbox'] for ann in anns_sel]
+        return img, bboxes.astype(int)
 
 def build_taco(cfg: DictConfig, category_name = "Bottle"):
     
@@ -66,6 +74,6 @@ def build_taco(cfg: DictConfig, category_name = "Bottle"):
     val_size = int(0.1 * len_dataset)
     test_size = len_dataset - train_size-val_size
 
-    train_dataset,val_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_size,val_size, test_size])
+    train_dataset,val_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_size,val_size, test_size],generator=torch.Generator().manual_seed(42))
 
     return train_dataset,val_dataset,test_dataset
