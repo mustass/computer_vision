@@ -27,6 +27,7 @@ class Taco(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         img_path = self.coco.loadImgs(self.index[idx])[0]['file_name']
         img = cv2.imread(str(self.dataset_path/img_path))
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         
         an_ids = self.coco.getAnnIds(imgIds=self.coco.loadImgs(self.index[idx])[0]['id'],iscrowd=None, catIds=self.catids)
         anns_sel = self.coco.loadAnns(an_ids)
@@ -62,10 +63,10 @@ def build_taco(cfg: DictConfig, category_name = "Bottle"):
     len_dataset = len(dataset)
 
     # Split dataset into train and test
-    train_size = int(0.8 * len_dataset)
-    val_size = int(0.1 * len_dataset)
+    train_size = int(cfg.datamodule.params.split_ratio[0] * len_dataset)
+    val_size = int(cfg.datamodule.params.split_ratio[2] * len_dataset)
     test_size = len_dataset - train_size-val_size
 
-    train_dataset,val_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_size,val_size, test_size])
+    train_dataset,val_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_size,val_size, test_size],generator=torch.Generator().manual_seed(42))
 
     return train_dataset,val_dataset,test_dataset

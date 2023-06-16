@@ -3,7 +3,7 @@ params:
   builder: dl4cv.datasets.build_taco
   path: /dtu/datasets1/02514/data_wastedetection/
   annotations_path: /dtu/datasets1/02514/data_wastedetection/annotations.json
-  split: [150, 25]
+  split_ratio: [0.8,0.1,0.1]
   batch_size: 6
   num_workers: 4
   pin_memory: True
