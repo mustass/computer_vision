@@ -1,0 +1,37 @@
+
+defaults:
+  - _self_
+  - augmentation: no_augs
+  - callbacks: callbacks
+  - private: default
+  - datamodule: taco
+  - inference: saliency
+  - logging: wandb
+  - loss: bce_logits
+  - metric: segmentation_metrics
+  - model: unet
+  - optimizer: adam
+  - scheduler: constantlr
+  - trainer: default_trainer
+  - training: segmentation_training
+  - override hydra/hydra_logging: colorlog
+  - override hydra/job_logging: colorlog
+
+general:
+  run_name: run
+  logs_folder_name: logs
+  workspace: computervision02514
+  project_name: Segmentation_Project
+  device: gpu
+  log_code: False
+  save_pytorch_model: True
+  save_best: True
+  convert_to_jit: True
+  predict: True
+
+hydra:
+  run:
+    dir: outputs/${now:%Y-%m-%d_%H-%M-%S}
+  sweep:
+    dir: outputs/${now:%Y-%m-%d_%H-%M-%S}
+    #subdir: ${now:%Y-%m-%d_%H-%M-%S}_${hydra.job.num}_${datamodule.fold_n}

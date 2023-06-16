@@ -1,0 +1,9 @@
+datamodule_name: dl4cv.lightning_classes.SegmentDataModule
+params:
+  builder: dl4cv.datasets.build_taco
+  path: /dtu/datasets1/02514/data_wastedetection/
+  annotations_path: /dtu/datasets1/02514/data_wastedetection/annotations.json
+  split: [150, 25]
+  batch_size: 6
+  num_workers: 4
+  pin_memory: True
