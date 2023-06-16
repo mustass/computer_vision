@@ -2,9 +2,11 @@ generator:
   class_name: torch.optim.Adam
   params:
     lr: ${training.lr_generator}
+    betas: [0.5, 0.999]
 
 
 discriminator:
   class_name: torch.optim.Adam
   params:
     lr: ${training.lr_discriminator}
+    betas: [0.5, 0.999]

@@ -1,5 +1,5 @@
-lr_discriminator: 2e-4
-lr_generator: 2e-4
+lr_discriminator: 4e-4
+lr_generator: 1e-4
 metric: ${metric.metric.metric_name}
 mode: "min"
 seed: 666

@@ -7,7 +7,7 @@ import torch
 import yaml
 from omegaconf import DictConfig, OmegaConf
 from dl4cv.utils.utils import set_seed
-from dl4cv.lightning_classes.plmodel import LitCVModel
+from dl4cv.lightning_classes.cvmodule import LitCVModel
 from dl4cv.datasets import HotDogNotHotDog
 from tqdm import tqdm
 import os
