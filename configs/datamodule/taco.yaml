@@ -1,0 +1,6 @@
+datamodule_name: dl4cv.lightning_classes.COCODataModule
+params:
+  root_path: /dtu/datasets1/02514/data_wastedetection
+  batch_size: 64
+  num_workers: 4
+  pin_memory: True
