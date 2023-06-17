@@ -92,7 +92,8 @@ class SegmentDataModule(LightningDataModule):
             pin_memory=self.cfg.datamodule.params.pin_memory,
             drop_last=True,
         )
-    
+
+
 class ObjectDetectDataModule(LightningDataModule):
     def __init__(self, cfg: DictConfig):
         super().__init__()
@@ -130,4 +131,3 @@ class ObjectDetectDataModule(LightningDataModule):
             pin_memory=self.cfg.datamodule.params.pin_memory,
             drop_last=True,
         )
-

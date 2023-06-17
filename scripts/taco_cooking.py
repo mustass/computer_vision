@@ -130,8 +130,8 @@ def run_selective_search(
             image = cv2.cvtColor(np.array(I), cv2.COLOR_RGB2BGR)
 
             scale_factor = (
-                image.shape[0] / target_size[1], # height
-                image.shape[1] / target_size[0], # width
+                image.shape[0] / target_size[1],  # height
+                image.shape[1] / target_size[0],  # width
             )
             image = cv2.resize(
                 image, (target_size[0], target_size[1]), interpolation=cv2.INTER_AREA
@@ -144,12 +144,12 @@ def run_selective_search(
                 x2 = int(annot[0] / scale_factor[1] + annot[2] / scale_factor[1])
                 y2 = int(annot[1] / scale_factor[0] + annot[3] / scale_factor[0])
 
-                assert y2 <= target_size[1] and y1 <= target_size[1], (
-                    f"y2 = {y2} and y1 = {y1} for gt of image {filename} with resized dims {image.shape}"
-                )
-                assert x2 <= target_size[0] and x1 <= target_size[0], (
-                    f"x2 = {x2} and x1 = {x1} for gt of image {filename} with resized dims {image.shape}"
-                )
+                assert (
+                    y2 <= target_size[1] and y1 <= target_size[1]
+                ), f"y2 = {y2} and y1 = {y1} for gt of image {filename} with resized dims {image.shape}"
+                assert (
+                    x2 <= target_size[0] and x1 <= target_size[0]
+                ), f"x2 = {x2} and x1 = {x1} for gt of image {filename} with resized dims {image.shape}"
 
                 gtvalues.append(
                     {
@@ -169,12 +169,12 @@ def run_selective_search(
             for e, result in enumerate(ssresults):
                 x, y, w, h = result
                 result_coords = {"x1": x, "x2": x + w, "y1": y, "y2": y + h}
-                assert y + h <= target_size[1] and y <= target_size[1], (
-                    f"y + h = {y + h} and y = {y} for ss of image {filename} with resized dims {image.shape}"
-                )
-                assert x + w <= target_size[0] and x <= target_size[0], (
-                    f"x + w = {x + w} and x = {x} for ss of image {filename} with resized dims {image.shape}"
-                )
+                assert (
+                    y + h <= target_size[1] and y <= target_size[1]
+                ), f"y + h = {y + h} and y = {y} for ss of image {filename} with resized dims {image.shape}"
+                assert (
+                    x + w <= target_size[0] and x <= target_size[0]
+                ), f"x + w = {x + w} and x = {x} for ss of image {filename} with resized dims {image.shape}"
                 regions[e] = {
                     "coordinates": result_coords,
                     "label": BACKGROUND_LABEL,
@@ -220,6 +220,7 @@ def run_selective_search(
     with open(str(outfile_path), "wb") as fp:
         pickle.dump(out, fp)
     return out
+
 
 def main():
     train_dataset, val_dataset, test_dataset, cat_mapping, _ = split_tacos()
