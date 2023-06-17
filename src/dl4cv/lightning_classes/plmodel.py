@@ -261,7 +261,7 @@ class LitSegModel(pl.LightningModule):
                 batch_idx,
                 self.cfg.datamodule.params.batch_size,
                 self.cfg.callbacks.model_checkpoint.params.dirpath,
-                wandb_logger= wandb_logger
+                wandb_logger=wandb_logger,
             )
 
         return loss
@@ -302,7 +302,7 @@ class LitSegModel(pl.LightningModule):
                 self.cfg.datamodule.params.batch_size,
                 self.cfg.callbacks.model_checkpoint.params.dirpath,
                 test=True,
-                wandb_logger=wandb_logger
+                wandb_logger=wandb_logger,
             )
 
         return loss

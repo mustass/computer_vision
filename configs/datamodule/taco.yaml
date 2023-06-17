@@ -1,6 +1,21 @@
-datamodule_name: dl4cv.lightning_classes.COCODataModule
+datamodule_name: dl4cv.lightning_classes.ObjectDetectDataModule
 params:
-  root_path: /dtu/datasets1/02514/data_wastedetection
-  batch_size: 64
+  builder: dl4cv.datasets.build_taco
+  img_size: [1280,720]
+  batch_size: 6
   num_workers: 4
   pin_memory: True
+
+train:
+  params:
+    path: /dtu/blackhole/0f/160495/s210527/taco/train
+    num_to_return: 64
+val:
+  params:
+    path: /dtu/blackhole/0f/160495/s210527/taco/val
+    num_to_return: 64
+test:
+  params:
+    path: /dtu/blackhole/0f/160495/s210527/taco/test
+    num_to_return: 64
+

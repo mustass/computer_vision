@@ -81,32 +81,31 @@ class MixupLoss:
         else:
             loss = self.criterion(predictions, targets)
         return loss
-    
 
 
 class FocalLoss:
-    
-    def __init__(self, gamma = 2) -> None:
+    def __init__(self, gamma=2) -> None:
         self.gamma = gamma
-    
+
     def __call__(self, preds, y):
         preds = torch.nn.functional.sigmoid(preds)
-        naive_loss = torch.pow(1-preds, self.gamma)*y*torch.log(preds) + (1-y)*torch.log(1-preds)*torch.pow(preds, self.gamma)
-        naive_loss = torch.flatten(naive_loss,start_dim=1).mean(dim=1)
+        naive_loss = torch.pow(1 - preds, self.gamma) * y * torch.log(preds) + (
+            1 - y
+        ) * torch.log(1 - preds) * torch.pow(preds, self.gamma)
+        naive_loss = torch.flatten(naive_loss, start_dim=1).mean(dim=1)
         return -torch.mean(naive_loss)
 
 
 class DiceLoss:
-
     def __init__(self) -> None:
         pass
 
-    def __call__(self, preds, targets ) -> Any:
+    def __call__(self, preds, targets) -> Any:
         preds = torch.nn.functional.sigmoid(preds)
         targets = targets.squeeze()
         preds = preds.squeeze()
-        targets = torch.flatten(targets, start_dim = 1)
-        preds = torch.flatten(preds, start_dim = 1)  
-        numerator = torch.mean(2*torch.mul(targets, preds+1),dim=1)
-        denominator = torch.mean(targets + preds,dim=1)+1
-        return torch.mean(1 - numerator/denominator.clamp(min=1e-6))
+        targets = torch.flatten(targets, start_dim=1)
+        preds = torch.flatten(preds, start_dim=1)
+        numerator = torch.mean(2 * torch.mul(targets, preds + 1), dim=1)
+        denominator = torch.mean(targets + preds, dim=1) + 1
+        return torch.mean(1 - numerator / denominator.clamp(min=1e-6))

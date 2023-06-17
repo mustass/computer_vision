@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from omegaconf import DictConfig
 
+
 class conv_block(nn.Module):
     def __init__(self, in_c, out_c):
         super().__init__()
@@ -25,6 +26,7 @@ class conv_block(nn.Module):
 
         return x
 
+
 class encoder_block(nn.Module):
     def __init__(self, in_c, out_c):
         super().__init__()
@@ -38,18 +40,20 @@ class encoder_block(nn.Module):
 
         return x, p
 
+
 class decoder_block(nn.Module):
     def __init__(self, in_c, out_c):
         super().__init__()
 
         self.up = nn.ConvTranspose2d(in_c, out_c, kernel_size=2, stride=2, padding=0)
-        self.conv = conv_block(out_c+out_c, out_c)
+        self.conv = conv_block(out_c + out_c, out_c)
 
     def forward(self, inputs, skip):
         x = self.up(inputs)
         x = torch.cat([x, skip], axis=1)
         x = self.conv(x)
         return x
+
 
 class UNet2(nn.Module):
     def __init__(self, cfg: DictConfig):
@@ -74,7 +78,7 @@ class UNet2(nn.Module):
         self.outputs = nn.Conv2d(64, 1, kernel_size=1, padding=0)
 
     def forward(self, inputs):
-        """ Encoder """
+        """Encoder"""
         s1, p1 = self.e1(inputs)
         s2, p2 = self.e2(p1)
         s3, p3 = self.e3(p2)
