@@ -8,11 +8,11 @@ defaults:
   - logging: wandb
   - loss: cross_entropy
   - metric: accuracy
-  - model: unet
+  - model: resnet18_transfer
   - optimizer: adam
   - scheduler: constantlr
   - trainer: default_trainer
-  - training: segmentation_training
+  - training: objectdetect_training
   - override hydra/hydra_logging: colorlog
   - override hydra/job_logging: colorlog
 

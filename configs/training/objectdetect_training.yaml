@@ -4,4 +4,5 @@ mode: "max"
 n_classes: 29
 seed: 666
 debug: False
-lightning_module_name: dl4cv.lightning_classes.plmodel.LitCVModel
+lightning_module_name: dl4cv.lightning_classes.plmodel.LitODModel
+

@@ -5,6 +5,7 @@ from pytorch_lightning import LightningDataModule
 from torch.utils.data import DataLoader, random_split
 import torch
 from dl4cv.utils.technical_utils import load_obj
+from dl4cv.datasets.taco_data import taco_train_collate_fn, taco_val_test_collate_fn
 
 
 class CVDataModule(LightningDataModule):
@@ -107,6 +108,7 @@ class ObjectDetectDataModule(LightningDataModule):
     def train_dataloader(self):
         return DataLoader(
             self.train,
+            collate_fn=taco_train_collate_fn,
             batch_size=self.cfg.datamodule.params.batch_size,
             num_workers=self.cfg.datamodule.params.num_workers,
             pin_memory=self.cfg.datamodule.params.pin_memory,
@@ -117,6 +119,7 @@ class ObjectDetectDataModule(LightningDataModule):
     def val_dataloader(self):
         return DataLoader(
             self.val,
+            collate_fn=taco_val_test_collate_fn,
             batch_size=self.cfg.datamodule.params.batch_size,
             num_workers=self.cfg.datamodule.params.num_workers,
             pin_memory=self.cfg.datamodule.params.pin_memory,
@@ -126,6 +129,7 @@ class ObjectDetectDataModule(LightningDataModule):
     def test_dataloader(self):
         return DataLoader(
             self.test,
+            collate_fn=taco_val_test_collate_fn,
             batch_size=self.cfg.datamodule.params.batch_size,
             num_workers=self.cfg.datamodule.params.num_workers,
             pin_memory=self.cfg.datamodule.params.pin_memory,
