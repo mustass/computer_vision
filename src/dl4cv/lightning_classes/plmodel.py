@@ -358,8 +358,9 @@ class LitODModel(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         input, target = batch
-        target = target.float()
+        target = torch.argmax(target, dim=1)
         predicted = self.model(input).squeeze()
+
         loss = self.loss(predicted, target)
         self.log(
             "train_Loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True
@@ -380,7 +381,7 @@ class LitODModel(pl.LightningModule):
 
     def validation_step(self, batch, batch_idx):
         input, target,_,_ = batch
-        target = target.float()
+        target = torch.argmax(target, dim=1)
         predicted = self.model(input).squeeze()
         loss = self.loss(predicted, target)
 
@@ -404,7 +405,7 @@ class LitODModel(pl.LightningModule):
     def test_step(self, batch, batch_idx):
         input, target,_,_ = batch
 
-        target = target.float()
+        target = torch.argmax(target, dim=1)
 
         predicted = self.model(input).squeeze()
         loss = self.loss(predicted, target)

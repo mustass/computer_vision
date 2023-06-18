@@ -2,14 +2,14 @@ datamodule_name: dl4cv.lightning_classes.ObjectDetectDataModule
 params:
   builder: dl4cv.datasets.build_taco
   img_size: [1280,720]
-  batch_size: 8
+  batch_size: 16
   num_workers: 4
   pin_memory: True
 
 train:
   params:
     path: /dtu/blackhole/0f/160495/s210527/taco/train
-    num_to_return: 16
+    num_to_return: 32
 val:
   params:
     path: /dtu/blackhole/0f/160495/s210527/taco/val

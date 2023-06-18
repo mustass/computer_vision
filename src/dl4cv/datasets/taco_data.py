@@ -87,14 +87,14 @@ class TACO(torch.utils.data.Dataset):
         trash_regions = [
             key
             for key in regions["regions"].keys()
-            if regions["regions"][key]["label"] != self.BACKGROUND_LABEL and self._sanitize_regions(regions["regions"][key])
+            if regions["regions"][key]["label"] != self.BACKGROUND_LABEL #and self._sanitize_regions(regions["regions"][key])
         ]
         out_regions = trash_regions
 
         background_regions = [
             key
             for key in regions["regions"].keys()
-            if regions["regions"][key]["label"] == self.BACKGROUND_LABEL and self._sanitize_regions(regions["regions"][key])
+            if regions["regions"][key]["label"] == self.BACKGROUND_LABEL #and self._sanitize_regions(regions["regions"][key])
         ]
 
         if len(trash_regions) > int(0.5 * self.num_to_return):
@@ -120,8 +120,8 @@ class TACO(torch.utils.data.Dataset):
         labels = []
 
         for region in regions:
-            x1 = region["coordinates"]["x1"]
-            y1 = region["coordinates"]["y1"]
+            x1 = max(0,region["coordinates"]["x1"])
+            y1 = max(0,region["coordinates"]["y1"])
             x2 = region["coordinates"]["x2"]
             y2 = region["coordinates"]["y2"]
             cropped_image = image[y1:y2, x1:x2]
@@ -149,13 +149,10 @@ class TACO(torch.utils.data.Dataset):
         x2 = region["coordinates"]["x2"]
         y2 = region["coordinates"]["y2"]
         
-        valid_y = y2 - y1 > 0 and y2< self.img_size[1] and y1 < self.img_size[1] and y1 > 0 and y2 > 0
-        valid_x = x2 - x1 > 0 and x2< self.img_size[0] and x1 < self.img_size[0] and x1 > 0 and x2 > 0
+        valid_y = y2< self.img_size[1] and y1 < self.img_size[1] and y1 > 0 and y2 > 0
+        valid_x = x2< self.img_size[0] and x1 < self.img_size[0] and x1 > 0 and x2 > 0
 
-        if valid_x and valid_y:
-            return True
-        else:
-            return False
+        return valid_x and valid_y
 
 
 
