@@ -70,11 +70,16 @@ class TACO(torch.utils.data.Dataset):
 
     def __getitem__(self, idx):
         regions = self.regions[idx]
-        images, labels = self._get_regions(regions)
+        images, labels, regions_selected = self._get_regions(regions)
         images = torch.cat(images, 0)
         labels = torch.cat(labels, 0)
-
-        return images, labels
+        return {
+            "images": images,
+            "labels": labels,
+            "filename": regions["filename"],
+            "image_id": regions["image_id"],
+            "regions": regions_selected,
+        }
 
     def _get_regions(self, regions):
         image = self._get_image(regions)
@@ -135,7 +140,7 @@ class TACO(torch.utils.data.Dataset):
                 torch.from_numpy(self._encode_labels(region["label"])).unsqueeze(0)
             )
 
-        return images, labels
+        return images, labels, regions
 
     def _get_image(self, regions):
         image_path = regions["filename"]
@@ -161,3 +166,44 @@ def build_taco(cfg: DictConfig):
     test = TACO(cfg, split="test")
 
     return train, val, test
+
+
+def taco_train_collate_fn(batch):
+    out_images = []
+    out_labels = []
+
+    for data_point in batch:
+        out_images.append(data_point["images"])
+        out_labels.append(data_point["labels"])
+
+    return torch.cat(out_images, 0), torch.cat(out_labels, 0)
+
+
+def taco_val_test_collate_fn(batch):
+    out_images = []
+    out_labels = []
+    out_image_ids = []
+    out_regions_selected = []
+
+    for data_point in batch:
+        out_images.append(data_point["images"])
+        out_labels.append(data_point["labels"])
+        out_image_ids.append(data_point["image_id"])
+        for region in data_point["regions"]:
+            _region = torch.tensor(
+                [
+                    region["coordinates"]["x1"],
+                    region["coordinates"]["x2"],
+                    region["coordinates"]["y1"],
+                    region["coordinates"]["y2"],
+                ]
+            )
+            _region = _region.unsqueeze(0)
+            out_regions_selected.append(_region)
+
+    return (
+        torch.cat(out_images, 0),
+        torch.cat(out_labels, 0),
+        torch.tensor(out_image_ids),
+        torch.cat(out_regions_selected, 0),
+    )
