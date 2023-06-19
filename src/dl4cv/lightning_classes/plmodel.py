@@ -381,7 +381,7 @@ class LitODModel(pl.LightningModule):
         return loss
 
     def validation_step(self, batch, batch_idx):
-        input, target,  _, _ = batch
+        input, target,  _, _, _,_ = batch
         target = torch.argmax(target, dim=1)
         predicted = self.model(input).squeeze()
         loss = self.loss(predicted, target)
@@ -404,7 +404,7 @@ class LitODModel(pl.LightningModule):
         return loss
 
     def test_step(self, batch, batch_idx):
-        input, target, _, _ = batch
+        input, target, _, _, _, _ = batch
 
         target = torch.argmax(target, dim=1)
 
@@ -429,7 +429,7 @@ class LitODModel(pl.LightningModule):
         return loss
     
     def nms_on_image(self, batch):
-        input, target, image_id, selected_regions, = batch
+        input, target, image_id, selected_regions, ground_truth_regions, ground_truth_labels = batch
 
         target = torch.argmax(target, dim=1)
 
@@ -441,7 +441,7 @@ class LitODModel(pl.LightningModule):
         assert len(input) == len(selected_regions) == len(predicted) == len(confidences)
         for i in range(len(input)):
             P.append({
-                'bbox': {"x1":selected_regions[i,0], "y1":selected_regions[i,2], "x2":selected_regions[i,1], "y2":selected_regions[i,3]},
+                'bbox': {"x1":selected_regions[i,0].item(), "y1":selected_regions[i,2].item(), "x2":selected_regions[i,1].item(), "y2":selected_regions[i,3].item()},
                 'conf': confidences[i].item(),
                 'pred_class': torch.argmax(predicted[i]).item(),
                 'true_class': target[i].item(),
@@ -450,4 +450,4 @@ class LitODModel(pl.LightningModule):
 
         kept = NMS(P, iou_threshold = 0.5)
 
-        return kept
+        return {"kept_preds":kept, "P":P, "gt_regions":ground_truth_regions, "gt_labels":ground_truth_labels}

@@ -12,7 +12,7 @@ from dl4cv.utils.object_detect_utils import get_iou, fix_orientation
 
 def split_tacos(
     dataset_path="/dtu/datasets1/02514/data_wastedetection",
-    outpath="/dtu/blackhole/0f/160495/s210527/taco",
+    outpath="/dtu/blackhole/0f/160495/s210527/taco_again",
     splits=[1000, 250, 250],
     seed=8008,
 ):
@@ -70,7 +70,7 @@ def split_tacos(
     with open(outpath + "/val/" + "val_annotations.json", "w") as f:
         f.write(json.dumps(val_dataset))
     with open(outpath + "/test/" + "test_annotations.json", "w") as f:
-        f.write(json.dumps(test_dataset))
+        f.write(json.dumps(test_dataset))  
 
     supercats = set([cat["supercategory"] for cat in dataset["categories"]])
     cat2supercat = {cat["id"]: cat["supercategory"] for cat in dataset["categories"]}
@@ -78,6 +78,12 @@ def split_tacos(
     cat2supercat_encoded = {
         cat_id: supercat2id[cat2supercat[cat_id]] for cat_id in cat2supercat
     }
+
+    # save 
+    with open(outpath + "/cat2supercat_encoded.json", "w") as f:
+        f.write(json.dumps(cat2supercat_encoded))
+    with open(outpath + "/supercat2id.json", "w") as f:
+        f.write(json.dumps(supercat2id))
 
     return train_dataset, val_dataset, test_dataset, cat2supercat_encoded, supercat2id
 
@@ -89,15 +95,19 @@ def _get_annotations_for_images(image_ids, annotations):
 
 def run_selective_search(
     dataset,
-    catid_to_supercat_label_mapping,
     outpath,
+    splits_path="/dtu/blackhole/0f/160495/s210527/taco_again",
     target_size=[1280, 720],
     dataset_root_path="/dtu/datasets1/02514/data_wastedetection",
     train=False,
 ):
     BACKGROUND_LABEL = -1
-    label_map = catid_to_supercat_label_mapping
 
+    with open(splits_path + "/cat2supercat_encoded.json", "r") as f:
+        label_map = json.loads(f.read())
+
+    label_map = {int(k):v for k,v in label_map.items()}
+    
     for orientation in ExifTags.TAGS.keys():
         if ExifTags.TAGS[orientation] == "Orientation":
             break
@@ -105,7 +115,7 @@ def run_selective_search(
     cv2.setUseOptimized(True)
     ss = cv2.ximgproc.segmentation.createSelectiveSearchSegmentation()
 
-    out = {}
+    out = []
 
     for image_index, i in tqdm(
         enumerate(dataset["images"]),
@@ -145,18 +155,18 @@ def run_selective_search(
                 y2 = int(annot[1] / scale_factor[0] + annot[3] / scale_factor[0])
 
                 assert (
-                    y2 <= target_size[1] and y1 <= target_size[1]
+                    y2 <= target_size[1] and y1 <= target_size[1] 
                 ), f"y2 = {y2} and y1 = {y1} for gt of image {filename} with resized dims {image.shape}"
                 assert (
                     x2 <= target_size[0] and x1 <= target_size[0]
                 ), f"x2 = {x2} and x1 = {x1} for gt of image {filename} with resized dims {image.shape}"
 
                 gtvalues.append(
-                    {
-                        "x1": x1,
-                        "x2": x2,
-                        "y1": y1,
-                        "y2": y2,
+                    {   "coordinates": {
+                            "x1": x1,
+                            "x2": x2,
+                            "y1": y1,
+                            "y2": y2},
                         "label": annots_labels[a_index],
                     }
                 )
@@ -170,10 +180,10 @@ def run_selective_search(
                 x, y, w, h = result
                 result_coords = {"x1": x, "x2": x + w, "y1": y, "y2": y + h}
                 assert (
-                    y + h <= target_size[1] and y <= target_size[1]
+                    y + h <= target_size[1] and y <= target_size[1] and y >= 0 
                 ), f"y + h = {y + h} and y = {y} for ss of image {filename} with resized dims {image.shape}"
                 assert (
-                    x + w <= target_size[0] and x <= target_size[0]
+                    x + w <= target_size[0] and x <= target_size[0] and x >= 0
                 ), f"x + w = {x + w} and x = {x} for ss of image {filename} with resized dims {image.shape}"
                 regions[e] = {
                     "coordinates": result_coords,
@@ -182,19 +192,11 @@ def run_selective_search(
                 }
                 for gtval in gtvalues:
                     iou = get_iou(
-                        gtval, result_coords
+                        gtval['coordinates'], result_coords
                     )  # calculating IoU for each of the proposed regions
-                    if regions[e]["iou"] < iou and iou > 0.5:
+                    if regions[e]["iou"] < iou and iou > 0.7:
                         regions[e]["iou"] = iou
                         regions[e]["label"] = gtval["label"]
-            if train:
-                last_index = len(regions)
-                for indx, gtval in enumerate(gtvalues):
-                    regions[last_index + indx] = {
-                        "coordinates": gtval,
-                        "label": gtval["label"],
-                        "iou": 1.0,
-                    }
 
             # print(f'For Image {image_index} with filename {filename} got {len(regions)} regions')
             # high_iou_regions = [region for region in regions.values() if region['iou'] > 0.5]
@@ -203,11 +205,12 @@ def run_selective_search(
             # print(high_iou_regions)
             # print(f'For Image {image_index} with filename {filename} got {len(low_iou_regions)} regions with iou < 0.5')
             # print(low_iou_regions[:5])
-            out[image_index] = {
+            out.append({
                 "regions": regions,
                 "filename": filename,
                 "image_id": i["id"],
-            }
+                "gt_values": gtvalues,
+            })
 
         except Exception as excpt:
             print(excpt)
@@ -223,19 +226,22 @@ def run_selective_search(
 
 
 def main():
-    train_dataset, val_dataset, test_dataset, cat_mapping, _ = split_tacos()
+    train_dataset, val_dataset, test_dataset, cat2supercat_encoded_, supercat2id_ = split_tacos()
+
+    print(f'cat2supercat_encoded:\n {cat2supercat_encoded_}')
+    
     print("Running selective search")
     train_ss = run_selective_search(
         train_dataset,
-        cat_mapping,
-        outpath="/dtu/blackhole/0f/160495/s210527/taco/train",
+        outpath="/dtu/blackhole/0f/160495/s210527/taco_again/train",
         train=True,
+        target_size=[250,250]
     )
     val_ss = run_selective_search(
-        val_dataset, cat_mapping, outpath="/dtu/blackhole/0f/160495/s210527/taco/val"
+        val_dataset, outpath="/dtu/blackhole/0f/160495/s210527/taco_again/val",target_size=[250,250]
     )
     test_ss = run_selective_search(
-        test_dataset, cat_mapping, outpath="/dtu/blackhole/0f/160495/s210527/taco/test"
+        test_dataset, outpath="/dtu/blackhole/0f/160495/s210527/taco_again/test",target_size=[250,250]
     )
 
 
