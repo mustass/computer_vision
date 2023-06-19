@@ -1,4 +1,4 @@
-lr: 1e-4
+lr: 2e-4
 metric: ${metric.metric.metric_name}
 mode: "max"
 n_classes: 29
