@@ -1,0 +1,21 @@
+train:
+  - class_name: torchvision.transforms.ToTensor
+    params:
+  - class_name: torchvision.transforms.Resize
+    params:
+      size: [224,224]
+  - class_name: torchvision.transforms.Normalize
+    params:
+      mean: [0.485, 0.456, 0.406]
+      std: [0.229, 0.224, 0.225]
+
+test:
+  - class_name: torchvision.transforms.ToTensor
+    params:
+  - class_name: torchvision.transforms.Resize
+    params:
+      size: [224,224]
+  - class_name: torchvision.transforms.Normalize
+    params:
+      mean: [0.485, 0.456, 0.406]
+      std: [0.229, 0.224, 0.225]

@@ -68,7 +68,15 @@ class ResNet50ImgNet(nn.Module):
         layers = list(backbone.children())[:-1]
         self.feature_extractor = nn.Sequential(*layers)
 
-        self.classifier = nn.Linear(num_filters, self.params.num_classes)
+        self.classifier = nn.Sequential(
+            nn.Linear(num_filters, 512),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(512, 256),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(256, self.params.num_classes),
+        )
 
     def forward(self, x):
         self.feature_extractor.eval()

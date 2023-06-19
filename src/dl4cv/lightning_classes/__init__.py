@@ -1,1 +1,1 @@
-from .datamodule import CVDataModule, SegmentDataModule
+from .datamodule import CVDataModule, SegmentDataModule, ObjectDetectDataModule
