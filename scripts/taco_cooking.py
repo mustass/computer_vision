@@ -99,7 +99,6 @@ def run_selective_search(
     splits_path="/dtu/blackhole/0f/160495/s210527/taco_again",
     target_size=[1280, 720],
     dataset_root_path="/dtu/datasets1/02514/data_wastedetection",
-    train=False,
 ):
     BACKGROUND_LABEL = -1
 
@@ -239,18 +238,14 @@ def main():
     train_ss = run_selective_search(
         train_dataset,
         outpath="/dtu/blackhole/0f/160495/s210527/taco_again/train",
-        train=True,
-        target_size=[250, 250],
     )
     val_ss = run_selective_search(
         val_dataset,
         outpath="/dtu/blackhole/0f/160495/s210527/taco_again/val",
-        target_size=[250, 250],
     )
     test_ss = run_selective_search(
         test_dataset,
         outpath="/dtu/blackhole/0f/160495/s210527/taco_again/test",
-        target_size=[250, 250],
     )
 
 
