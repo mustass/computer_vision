@@ -8,7 +8,7 @@ import yaml
 from omegaconf import DictConfig, OmegaConf
 from dl4cv.utils.utils import set_seed
 from dl4cv.lightning_classes.plmodel import LitODModel
-from dl4cv.datasets import build_taco 
+from dl4cv.datasets import build_taco
 from dl4cv.datasets.taco_data import taco_val_test_collate_fn
 from tqdm import tqdm
 import os
@@ -46,9 +46,6 @@ def main(cfg: DictConfig, batch_size: int = 1, strategy="max") -> None:
                 batch,
             )
         )
-
-
-
 
     if not os.path.exists(
         f"outputs/{cfg.inference.run_name}/saliency_maps_sigma_{cfg.inference.saliency_params.sigma}"

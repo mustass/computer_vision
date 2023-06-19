@@ -65,7 +65,6 @@ class TACO(torch.utils.data.Dataset):
         with open(file, "rb") as f:
             regions = pickle.load(f)
         return regions
-    
 
     def __len__(self):
         return len(self.regions)
@@ -107,15 +106,19 @@ class TACO(torch.utils.data.Dataset):
 
         if self.train:
             out_regions = out_regions + gt_regions
-        
+
         if len(out_regions) > int(0.5 * self.num_to_return):
             out_regions_indecies = np.random.choice(
-                np.arange(len(out_regions)), int(0.5 * self.num_to_return), replace=False
+                np.arange(len(out_regions)),
+                int(0.5 * self.num_to_return),
+                replace=False,
             )
             out_regions = [out_regions[i] for i in out_regions_indecies]
         try:
             background_regions_indecies = np.random.choice(
-                np.arange(len(background_regions)), int(self.num_to_return - len(out_regions)), replace=False
+                np.arange(len(background_regions)),
+                int(self.num_to_return - len(out_regions)),
+                replace=False,
             )
         except Exception as excpt:
             print(f"Exception: {excpt}")
@@ -125,7 +128,6 @@ class TACO(torch.utils.data.Dataset):
             raise excpt
 
         out_background = [background_regions[i] for i in background_regions_indecies]
-
 
         regions = out_regions + out_background
 
@@ -229,7 +231,7 @@ def taco_val_test_collate_fn(batch):
             )
             _region = _region.unsqueeze(0)
             out_regions_selected.append(_region)
-        
+
         for region in data_point["gt_regions"]:
             _region = torch.tensor(
                 [

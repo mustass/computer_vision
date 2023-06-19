@@ -1,67 +1,6 @@
 from PIL import Image
 import numpy as np
 
-CAT_MAPPING = {0: 23,
- 1: 6,
- 2: 19,
- 3: 19,
- 4: 13,
- 5: 13,
- 6: 13,
- 7: 4,
- 8: 4,
- 9: 24,
- 10: 20,
- 11: 20,
- 12: 20,
- 13: 9,
- 14: 9,
- 15: 9,
- 16: 9,
- 17: 9,
- 18: 9,
- 19: 9,
- 20: 16,
- 21: 16,
- 22: 16,
- 23: 16,
- 24: 16,
- 25: 21,
- 26: 2,
- 27: 10,
- 28: 10,
- 29: 26,
- 30: 8,
- 31: 8,
- 32: 8,
- 33: 8,
- 34: 11,
- 35: 11,
- 36: 14,
- 37: 14,
- 38: 14,
- 39: 14,
- 40: 14,
- 41: 14,
- 42: 14,
- 43: 0,
- 44: 0,
- 45: 0,
- 46: 0,
- 47: 0,
- 48: 3,
- 49: 7,
- 50: 1,
- 51: 22,
- 52: 18,
- 53: 25,
- 54: 12,
- 55: 17,
- 56: 17,
- 57: 15,
- 58: 5,
- 59: 27}
-
 
 def fix_orientation(filename, orientation):
     I = Image.open(filename)
@@ -104,32 +43,32 @@ def get_iou(bb1, bb2):
     return iou
 
 
-def NMS(P, iou_threshold = 0.5, background_class = 28):
-  # P: list of dicts {'bbox':(x1,y1,x2,y2), 'conf':float, 'pred_class':int, 'true_class':int, 'image_id':int}
-  conf_list = np.array([x['conf'] for x in P])
-  classes_list = np.array([x['pred_class'] for x in P])
-  conf_order = (-conf_list).argsort() # apply minus to reverse order
-  isremoved = [False for _ in range(len(P))]
-  keep = []
+def NMS(P, iou_threshold=0.5, background_class=28):
+    # P: list of dicts {'bbox':(x1,y1,x2,y2), 'conf':float, 'pred_class':int, 'true_class':int, 'image_id':int}
+    conf_list = np.array([x["conf"] for x in P])
+    classes_list = np.array([x["pred_class"] for x in P])
+    conf_order = (-conf_list).argsort()  # apply minus to reverse order
+    isremoved = [False for _ in range(len(P))]
+    keep = []
 
-  for idx in range(len(P)):
-    to_keep = conf_order[idx]
-    class_to_keep = classes_list[to_keep]
-    if isremoved[to_keep]:
-      continue
+    for idx in range(len(P)):
+        to_keep = conf_order[idx]
+        class_to_keep = classes_list[to_keep]
+        if isremoved[to_keep]:
+            continue
 
-    if class_to_keep == background_class:
-        continue
-    
-    # append to keep list
-    keep.append(P[to_keep])
-    isremoved[to_keep] = True
-    # remove overlapping bboxes
-    for order in range(idx + 1, len(P)):
-      bbox_idx = conf_order[order]
-      if isremoved[bbox_idx]==False:  # if not removed yet
-        # check overlapping
-        iou = get_iou(P[to_keep]['bbox'], P[bbox_idx]['bbox'])
-        if iou > iou_threshold:
-          isremoved[bbox_idx] = True
-  return keep
+        if class_to_keep == background_class:
+            continue
+
+        # append to keep list
+        keep.append(P[to_keep])
+        isremoved[to_keep] = True
+        # remove overlapping bboxes
+        for order in range(idx + 1, len(P)):
+            bbox_idx = conf_order[order]
+            if isremoved[bbox_idx] == False:  # if not removed yet
+                # check overlapping
+                iou = get_iou(P[to_keep]["bbox"], P[bbox_idx]["bbox"])
+                if iou > iou_threshold:
+                    isremoved[bbox_idx] = True
+    return keep
