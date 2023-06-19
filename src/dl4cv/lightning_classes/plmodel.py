@@ -10,6 +10,7 @@ from torch.autograd import Variable
 
 from dl4cv.utils.technical_utils import load_obj
 from dl4cv.utils.segmentation_utils import plot_results
+from dl4cv.utils.object_detect_utils import NMS
 
 
 class LitCVModel(pl.LightningModule):
@@ -380,7 +381,7 @@ class LitODModel(pl.LightningModule):
         return loss
 
     def validation_step(self, batch, batch_idx):
-        input, target, _, _ = batch
+        input, target,  _, _ = batch
         target = torch.argmax(target, dim=1)
         predicted = self.model(input).squeeze()
         loss = self.loss(predicted, target)
@@ -426,3 +427,27 @@ class LitODModel(pl.LightningModule):
             )
 
         return loss
+    
+    def nms_on_image(self, batch):
+        input, target, image_id, selected_regions, = batch
+
+        target = torch.argmax(target, dim=1)
+
+        predicted = torch.nn.functional.softmax(self.model(input).squeeze(),1)
+
+        confidences = torch.max(predicted, dim=1).values
+        
+        P = []
+        assert len(input) == len(selected_regions) == len(predicted) == len(confidences)
+        for i in range(len(input)):
+            P.append({
+                'bbox': {"x1":selected_regions[i,0], "y1":selected_regions[i,2], "x2":selected_regions[i,1], "y2":selected_regions[i,3]},
+                'conf': confidences[i].item(),
+                'pred_class': torch.argmax(predicted[i]).item(),
+                'true_class': target[i].item(),
+                'image_id': image_id[0].item()
+            })
+
+        kept = NMS(P, iou_threshold = 0.5)
+
+        return kept

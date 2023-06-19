@@ -6,7 +6,7 @@ import cv2
 from omegaconf import DictConfig
 
 from dl4cv.utils.technical_utils import load_obj
-from dl4cv.utils.object_detect_utils import get_iou, fix_orientation
+from dl4cv.utils.object_detect_utils import fix_orientation
 
 from pathlib import Path
 import json
@@ -204,7 +204,6 @@ def taco_val_test_collate_fn(batch):
     out_labels = []
     out_image_ids = []
     out_regions_selected = []
-
     for data_point in batch:
         out_images.append(data_point["images"])
         out_labels.append(data_point["labels"])
