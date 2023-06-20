@@ -9,13 +9,13 @@ params:
 train:
   params:
     path: /dtu/blackhole/0f/160495/s210527/taco_again/train
-    num_to_return: 64
+    num_to_return: 128
 val:
   params:
     path: /dtu/blackhole/0f/160495/s210527/taco_again/val
-    num_to_return: 64
+    num_to_return: 128
 test:
   params:
     path: /dtu/blackhole/0f/160495/s210527/taco_again/test
-    num_to_return: 64
+    num_to_return: 128
 
