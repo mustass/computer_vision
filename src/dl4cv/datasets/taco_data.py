@@ -163,18 +163,22 @@ class TACO(torch.utils.data.Dataset):
 
         regions_keys = list(regions["regions"].keys())
 
-        regions_keys = np.random.choice(
-            regions_keys, self.num_to_return, replace=False
-        )
+        regions_out = [regions["regions"][key] for key in regions_keys[:self.num_to_return]]
 
-        regions = [regions["regions"][key] for key in regions_keys]
-
-        assert len(regions) == self.num_to_return
+        if len(regions_out) < self.num_to_return:
+            print(f'Len region keys: {len(regions_keys)}')
+            print(f'Oversampling!!!')
+            regions_keys = np.random.choice(
+                regions_keys,
+                self.num_to_return,
+                replace=True,
+            )
+            regions_out = [regions["regions"][key] for key in regions_keys]
 
         images = []
         labels = []
 
-        for region in regions:
+        for region in regions_out:
             x1 = max(0,region["coordinates"]["x1"])
             y1 = max(0,region["coordinates"]["y1"])
             x2 = region["coordinates"]["x2"]
@@ -195,7 +199,7 @@ class TACO(torch.utils.data.Dataset):
                 torch.from_numpy(self._encode_labels(region["label"])).unsqueeze(0)
             )
 
-        return images, labels, regions, gt_regions
+        return images, labels, regions_out, gt_regions
 
     def _sanitize_regions(self, region, train=True):
         x1 = max(0,region["coordinates"]["x1"])
