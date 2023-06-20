@@ -1,9 +1,9 @@
 
 train:
-  - class_name: albumentations.RandomCrop
+  - class_name: albumentations.Resize
     params:
-      height: 128
-      width: 128
+      height: 512
+      width: 512
   - class_name: albumentations.RandomRotate90
     params:
       p: 1

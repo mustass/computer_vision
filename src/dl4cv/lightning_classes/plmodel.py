@@ -163,7 +163,11 @@ class LitSegModel(pl.LightningModule):
         self.cfg = cfg
 
         self.model = load_obj(cfg.model.class_name)(cfg=cfg)
-        self.loss = load_obj(cfg.loss.class_name)()
+        if cfg.loss.class_name=='torch.nn.BCEWithLogitsLoss':
+            self.loss = load_obj(cfg.loss.class_name)(pos_weight = torch.tensor(cfg.loss.params.pos_weight) if cfg.loss.params.pos_weight!='None' else None)
+        else:
+            self.loss = load_obj(cfg.loss.class_name)()
+
         self.do_plots = cfg.training.save_plots
 
         self.metrics = torch.nn.ModuleDict(

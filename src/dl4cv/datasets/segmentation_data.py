@@ -116,27 +116,33 @@ class DRIVE(torch.utils.data.Dataset):
 
 
 def build_drive(cfg: DictConfig):
+    np.random.seed(42)
     indices = np.random.permutation(np.arange(20))
-    train = DRIVE(cfg, indices=indices[: cfg.datamodule.params.split[0]])
+    indicesTrain=indices[: cfg.datamodule.params.split[0]]
+    indicesVal=indices[
+            cfg.datamodule.params.split[0] : cfg.datamodule.params.split[0]
+            + cfg.datamodule.params.split[1]
+        ]
+    indicesTest=indices[
+            cfg.datamodule.params.split[0] + cfg.datamodule.params.split[1] :
+        ]
+    
+    train = DRIVE(cfg, indices=indicesTrain)
     val = DRIVE(
         cfg,
         train=False,
-        indices=indices[
-            cfg.datamodule.params.split[0] : cfg.datamodule.params.split[0]
-            + cfg.datamodule.params.split[1]
-        ],
+        indices=indicesVal,
     )
     test = DRIVE(
         cfg,
         train=False,
-        indices=indices[
-            cfg.datamodule.params.split[0] + cfg.datamodule.params.split[1] :
-        ],
+        indices=indicesTest,
     )
     return train, val, test
 
 
 def build_ph2(cfg: DictConfig):
+    np.random.seed(42)
     indices = np.random.permutation(np.arange(200))
     train = PH2(cfg, indices=indices[: cfg.datamodule.params.split[0]])
     val = PH2(
