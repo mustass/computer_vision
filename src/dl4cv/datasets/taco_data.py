@@ -6,7 +6,7 @@ import cv2
 from omegaconf import DictConfig
 
 from dl4cv.utils.technical_utils import load_obj
-from dl4cv.utils.object_detect_utils import get_iou, fix_orientation
+from dl4cv.utils.object_detect_utils import fix_orientation
 
 from pathlib import Path
 import json
@@ -71,7 +71,7 @@ class TACO(torch.utils.data.Dataset):
 
     def __getitem__(self, idx):
         regions = self.regions[idx]
-        images, labels, regions_selected = self._get_regions(regions)
+        images, labels, regions_selected, gt_regions = self._get_regions(regions)
         images = torch.cat(images, 0)
         labels = torch.cat(labels, 0)
         return {
@@ -80,51 +80,65 @@ class TACO(torch.utils.data.Dataset):
             "filename": regions["filename"],
             "image_id": regions["image_id"],
             "regions": regions_selected,
+            "gt_regions": gt_regions,
         }
 
     def _get_regions(self, regions):
         image = self._get_image(regions)
 
+        gt_regions = regions["gt_values"]
+
         trash_regions = [
-            key
-            for key in regions["regions"].keys()
-            if regions["regions"][key]["label"] != self.BACKGROUND_LABEL
-            and self._sanitize_regions(regions["regions"][key], train=self.train)
+            region
+            for region in regions["regions"].values()
+            if region["label"] != self.BACKGROUND_LABEL
+            and self._sanitize_regions(region)
         ]
-        out_regions = trash_regions
 
         background_regions = [
-            key
-            for key in regions["regions"].keys()
-            if regions["regions"][key]["label"] == self.BACKGROUND_LABEL
-            and self._sanitize_regions(regions["regions"][key], train=self.train)
+            region
+            for region in regions["regions"].values()
+            if region["label"] == self.BACKGROUND_LABEL
+            and self._sanitize_regions(region)
         ]
 
-        if len(trash_regions) > int(0.5 * self.num_to_return):
-            out_regions = np.random.choice(
-                trash_regions, int(0.5 * self.num_to_return), replace=False
+        out_regions = trash_regions
+
+        if self.train:
+            out_regions = out_regions + gt_regions
+
+        if len(out_regions) > int(0.5 * self.num_to_return):
+            out_regions_indecies = np.random.choice(
+                np.arange(len(out_regions)),
+                int(0.5 * self.num_to_return),
+                replace=False,
             )
-        out_regions = np.concatenate(
-            [
-                out_regions,
-                np.random.choice(
-                    background_regions,
-                    int(self.num_to_return - len(out_regions)),
-                    replace=False,
-                ),
-            ]
-        )
+            out_regions = [out_regions[i] for i in out_regions_indecies]
+        try:
+            background_regions_indecies = np.random.choice(
+                np.arange(len(background_regions)),
+                int(self.num_to_return - len(out_regions)),
+                replace=False,
+            )
+        except Exception as excpt:
+            print(f"Exception: {excpt}")
+            print(f"Background Regions: {len(background_regions)}")
+            print(f"Out Regions: {len(out_regions)}")
+            print(f"Num to return: {self.num_to_return}")
+            raise excpt
 
-        assert len(out_regions) == self.num_to_return
+        out_background = [background_regions[i] for i in background_regions_indecies]
 
-        regions = [regions["regions"][region] for region in out_regions]
+        regions = out_regions + out_background
+
+        assert len(regions) == self.num_to_return
 
         images = []
         labels = []
 
         for region in regions:
-            x1 = max(0, region["coordinates"]["x1"])
-            y1 = max(0, region["coordinates"]["y1"])
+            x1 = region["coordinates"]["x1"]
+            y1 = region["coordinates"]["y1"]
             x2 = region["coordinates"]["x2"]
             y2 = region["coordinates"]["y2"]
             cropped_image = image[y1:y2, x1:x2]
@@ -143,7 +157,7 @@ class TACO(torch.utils.data.Dataset):
                 torch.from_numpy(self._encode_labels(region["label"])).unsqueeze(0)
             )
 
-        return images, labels, regions
+        return images, labels, regions, gt_regions
 
     def _sanitize_regions(self, region, train=True):
         x1 = region["coordinates"]["x1"]
@@ -155,10 +169,6 @@ class TACO(torch.utils.data.Dataset):
         valid_x = x2 < self.img_size[0] and x1 < self.img_size[0] and x1 > 0 and x2 > 0
 
         valid_iou = region["iou"] > 0.7 or region["iou"] < 0.3
-        if not train:
-            valid_iou = (region["iou"] > 0.7 or region["iou"] < 0.3) and region[
-                "iou"
-            ] != 1.0
 
         return (valid_x and valid_y) and valid_iou
 
@@ -204,7 +214,8 @@ def taco_val_test_collate_fn(batch):
     out_labels = []
     out_image_ids = []
     out_regions_selected = []
-
+    out_regions_gt = []
+    out_labels_gt = []
     for data_point in batch:
         out_images.append(data_point["images"])
         out_labels.append(data_point["labels"])
@@ -221,9 +232,24 @@ def taco_val_test_collate_fn(batch):
             _region = _region.unsqueeze(0)
             out_regions_selected.append(_region)
 
+        for region in data_point["gt_regions"]:
+            _region = torch.tensor(
+                [
+                    region["coordinates"]["x1"],
+                    region["coordinates"]["x2"],
+                    region["coordinates"]["y1"],
+                    region["coordinates"]["y2"],
+                ]
+            )
+            _region = _region.unsqueeze(0)
+            out_regions_gt.append(_region)
+            out_labels_gt.append(region["label"])
+
     return (
         torch.cat(out_images, 0),
         torch.cat(out_labels, 0),
         torch.tensor(out_image_ids),
         torch.cat(out_regions_selected, 0),
+        torch.cat(out_regions_gt, 0),
+        torch.tensor(out_labels_gt),
     )

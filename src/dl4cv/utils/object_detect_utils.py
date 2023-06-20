@@ -1,4 +1,5 @@
 from PIL import Image
+import numpy as np
 
 
 def fix_orientation(filename, orientation):
@@ -40,3 +41,34 @@ def get_iou(bb1, bb2):
     assert iou >= 0.0
     assert iou <= 1.0
     return iou
+
+
+def NMS(P, iou_threshold=0.5, background_class=28):
+    # P: list of dicts {'bbox':(x1,y1,x2,y2), 'conf':float, 'pred_class':int, 'true_class':int, 'image_id':int}
+    conf_list = np.array([x["conf"] for x in P])
+    classes_list = np.array([x["pred_class"] for x in P])
+    conf_order = (-conf_list).argsort()  # apply minus to reverse order
+    isremoved = [False for _ in range(len(P))]
+    keep = []
+
+    for idx in range(len(P)):
+        to_keep = conf_order[idx]
+        class_to_keep = classes_list[to_keep]
+        if isremoved[to_keep]:
+            continue
+
+        if class_to_keep == background_class:
+            continue
+
+        # append to keep list
+        keep.append(P[to_keep])
+        isremoved[to_keep] = True
+        # remove overlapping bboxes
+        for order in range(idx + 1, len(P)):
+            bbox_idx = conf_order[order]
+            if isremoved[bbox_idx] == False:  # if not removed yet
+                # check overlapping
+                iou = get_iou(P[to_keep]["bbox"], P[bbox_idx]["bbox"])
+                if iou > iou_threshold:
+                    isremoved[bbox_idx] = True
+    return keep
