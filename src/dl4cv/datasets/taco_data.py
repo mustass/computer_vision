@@ -14,11 +14,12 @@ import pickle
 
 
 class TACO(torch.utils.data.Dataset):
-    def __init__(self, cfg: DictConfig, split="train"):
+    def __init__(self, cfg: DictConfig, split="train", inference=False):
         super().__init__()
         self.cfg = cfg
         self.split = split
         self.train = split == "train"
+        self.inference = inference
 
         self.BACKGROUND_LABEL = -1
 
@@ -71,7 +72,10 @@ class TACO(torch.utils.data.Dataset):
 
     def __getitem__(self, idx):
         regions = self.regions[idx]
-        images, labels, regions_selected, gt_regions = self._get_regions(regions)
+        if not self.inference:
+            images, labels, regions_selected, gt_regions = self._get_regions_train(regions)
+        else:
+            images, labels, regions_selected, gt_regions = self._get_regions_pipeline_test(regions)
         images = torch.cat(images, 0)
         labels = torch.cat(labels, 0)
         return {
@@ -83,7 +87,7 @@ class TACO(torch.utils.data.Dataset):
             "gt_regions": gt_regions,
         }
 
-    def _get_regions(self, regions):
+    def _get_regions_train(self, regions):
         image = self._get_image(regions)
 
         gt_regions = regions["gt_values"]
@@ -103,9 +107,8 @@ class TACO(torch.utils.data.Dataset):
         ]
 
         out_regions = trash_regions
-
         if self.train:
-            out_regions = out_regions + gt_regions
+            out_regions = trash_regions + gt_regions
 
         if len(out_regions) > int(0.5 * self.num_to_return):
             out_regions_indecies = np.random.choice(
@@ -114,18 +117,12 @@ class TACO(torch.utils.data.Dataset):
                 replace=False,
             )
             out_regions = [out_regions[i] for i in out_regions_indecies]
-        try:
-            background_regions_indecies = np.random.choice(
+        
+        background_regions_indecies = np.random.choice(
                 np.arange(len(background_regions)),
                 int(self.num_to_return - len(out_regions)),
                 replace=False,
             )
-        except Exception as excpt:
-            print(f"Exception: {excpt}")
-            print(f"Background Regions: {len(background_regions)}")
-            print(f"Out Regions: {len(out_regions)}")
-            print(f"Num to return: {self.num_to_return}")
-            raise excpt
 
         out_background = [background_regions[i] for i in background_regions_indecies]
 
@@ -137,8 +134,49 @@ class TACO(torch.utils.data.Dataset):
         labels = []
 
         for region in regions:
-            x1 = region["coordinates"]["x1"]
-            y1 = region["coordinates"]["y1"]
+            x1 = max(0,region["coordinates"]["x1"])
+            y1 = max(0,region["coordinates"]["y1"])
+            x2 = region["coordinates"]["x2"]
+            y2 = region["coordinates"]["y2"]
+            cropped_image = image[y1:y2, x1:x2]
+
+            try:
+                transformed_image = self.transform(cropped_image)
+            except Exception as excpt:
+                print(f"Exception: {excpt}")
+                print(f"Original Image: {image.shape}")
+                print(f"Cropped Image: {cropped_image.shape}")
+                print(f"Region: {region['coordinates']}")
+                raise excpt
+
+            images.append(transformed_image.unsqueeze(0))
+            labels.append(
+                torch.from_numpy(self._encode_labels(region["label"])).unsqueeze(0)
+            )
+
+        return images, labels, regions, gt_regions
+
+    def _get_regions_pipeline_test(self, regions):
+        image = self._get_image(regions)
+
+        gt_regions = regions["gt_values"]
+
+        regions_keys = list(regions["regions"].keys())
+
+        regions_keys = np.random.choice(
+            regions_keys, self.num_to_return, replace=False
+        )
+
+        regions = [regions["regions"][key] for key in regions_keys]
+
+        assert len(regions) == self.num_to_return
+
+        images = []
+        labels = []
+
+        for region in regions:
+            x1 = max(0,region["coordinates"]["x1"])
+            y1 = max(0,region["coordinates"]["y1"])
             x2 = region["coordinates"]["x2"]
             y2 = region["coordinates"]["y2"]
             cropped_image = image[y1:y2, x1:x2]
@@ -160,8 +198,8 @@ class TACO(torch.utils.data.Dataset):
         return images, labels, regions, gt_regions
 
     def _sanitize_regions(self, region, train=True):
-        x1 = region["coordinates"]["x1"]
-        y1 = region["coordinates"]["y1"]
+        x1 = max(0,region["coordinates"]["x1"])
+        y1 = max(0,region["coordinates"]["y1"])
         x2 = region["coordinates"]["x2"]
         y2 = region["coordinates"]["y2"]
 
@@ -194,8 +232,8 @@ def build_taco(cfg: DictConfig):
     train = TACO(cfg, split="train")
     val = TACO(cfg, split="val")
     test = TACO(cfg, split="test")
-
-    return train, val, test
+    inference = TACO(cfg, split="test", inference=True)
+    return train, val, test,inference
 
 
 def taco_train_collate_fn(batch):
