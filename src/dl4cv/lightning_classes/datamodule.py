@@ -101,7 +101,7 @@ class ObjectDetectDataModule(LightningDataModule):
         self.cfg = cfg
 
     def setup(self, stage: Optional[str] = None, inference: Optional[bool] = False):
-        self.train, self.val, self.test = load_obj(self.cfg.datamodule.params.builder)(
+        self.train, self.val, self.test, self.inference = load_obj(self.cfg.datamodule.params.builder)(
             self.cfg
         )
 

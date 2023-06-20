@@ -1,8 +1,8 @@
 metric:
   class_name: torchmetrics.Accuracy
-  metric_name: accuracy
+  metric_name: accuracy_macro_avg
   params:
-    task: binary
-    threshold: 0.5
+    task: multiclass
+    average: macro
     num_classes: ${training.n_classes}
     top_k: 1
